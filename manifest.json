@@ -1,0 +1,26 @@
+{
+  "name": "Market Radar",
+  "short_name": "RADAR",
+  "description": "Monitor de mercados cripto y bolsa en tiempo real con alertas",
+  "start_url": "/market-radar/",
+  "scope": "/market-radar/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#07070f",
+  "theme_color": "#07070f",
+  "categories": ["finance", "utilities"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
