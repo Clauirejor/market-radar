@@ -50,11 +50,29 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .ab-tick{flex:1;font-size:9px;color:var(--text2);padding:0 14px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 
 /* ── LAYOUT ── */
-.body{display:grid;grid-template-columns:255px 1fr 275px;flex:1;gap:1px;background:var(--border);overflow:hidden}
-.panel{background:var(--panel);overflow-y:auto;overflow-x:hidden}
+.body{display:flex;flex-direction:row;flex:1;overflow:hidden;background:var(--bg)}
+.panel{background:var(--panel);overflow-y:auto;overflow-x:hidden;flex-shrink:0}
 .panel::-webkit-scrollbar{width:3px}
 .panel::-webkit-scrollbar-thumb{background:var(--border2)}
 .ptit{font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2);padding:10px 13px 8px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);z-index:5}
+
+/* ── RESIZABLE DIVIDERS ── */
+.divider{width:5px;background:var(--border);flex-shrink:0;cursor:col-resize;position:relative;transition:background .15s;z-index:20;display:flex;align-items:center;justify-content:center}
+.divider:hover,.divider.dragging{background:var(--accent)}
+.divider::after{content:'';position:absolute;width:1px;height:32px;background:currentColor;opacity:.4;border-radius:1px}
+.divider:hover::after,.divider.dragging::after{opacity:1}
+
+/* vertical divider inside center wrap */
+.vdivider{height:5px;background:var(--border);flex-shrink:0;cursor:row-resize;position:relative;transition:background .15s;z-index:20;display:flex;align-items:center;justify-content:center}
+.vdivider:hover,.vdivider.dragging{background:var(--accent)}
+.vdivider::after{content:'';position:absolute;height:1px;width:32px;background:currentColor;opacity:.4;border-radius:1px}
+.vdivider:hover::after,.vdivider.dragging::after{opacity:1}
+
+/* resize cursor overlay when dragging */
+body.h-resizing{cursor:col-resize!important;user-select:none!important}
+body.v-resizing{cursor:row-resize!important;user-select:none!important}
+body.h-resizing *,body.v-resizing *{pointer-events:none!important}
+body.h-resizing .divider,body.v-resizing .vdivider{pointer-events:auto!important}
 
 /* ── SIGNAL ── */
 .sig-box{padding:14px 13px;border-bottom:1px solid var(--border);text-align:center}
@@ -86,11 +104,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .sec-l{font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:7px 13px 3px}
 
 /* ── CENTER ── */
-.c-wrap{display:flex;flex-direction:column;background:var(--border);gap:1px;overflow:hidden}
+.c-wrap{display:flex;flex-direction:column;flex:1;background:var(--panel);overflow:hidden;min-width:0}
+.chart-area{display:flex;flex-direction:column;overflow:hidden;min-height:80px}
 .chart-top{display:flex;align-items:center;justify-content:space-between;padding:7px 13px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel)}
 .ohlc{display:flex;gap:10px;font-size:9px;color:var(--text2)}
-canvas#chart{background:var(--panel);display:block}
-.bot{display:flex;flex-direction:column;background:var(--panel);border-top:1px solid var(--border);min-height:0;overflow:hidden}
+canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:0}
+.bot{display:flex;flex-direction:column;background:var(--panel);min-height:60px;overflow:hidden}
 .tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
 .tab{padding:7px 13px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -114,7 +133,7 @@ canvas#chart{background:var(--panel);display:block}
 .imp-l{background:rgba(104,120,142,.2);color:var(--text2)}
 
 /* ── RIGHT ── */
-.rp{background:var(--panel);display:flex;flex-direction:column;overflow:hidden}
+.rp{background:var(--panel);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;min-width:180px}
 .ga-card{padding:12px;border-bottom:1px solid var(--border)}
 .ga-big{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;line-height:1;text-align:center;margin-bottom:3px}
 .ga-sub{font-size:8px;color:var(--text2);text-align:center;margin-bottom:8px}
@@ -220,10 +239,10 @@ canvas#chart{background:var(--panel);display:block}
 </div>
 
 <!-- BODY -->
-<div class="body">
+<div class="body" id="mainBody">
 
-  <!-- LEFT -->
-  <div class="panel">
+  <!-- LEFT PANEL -->
+  <div class="panel" id="leftPanel" style="width:255px">
     <div class="ptit" id="leftTitle">Señal & Indicadores</div>
     <div class="sig-box">
       <div class="sig-badge NEUTRAL" id="sigBadge">◆ NEUTRO</div>
@@ -250,19 +269,28 @@ canvas#chart{background:var(--panel);display:block}
     <div id="lvlList"></div>
   </div>
 
+  <!-- DIVIDER LEFT ↔ CENTER -->
+  <div class="divider" id="divLC" title="Arrastrar para redimensionar"></div>
+
   <!-- CENTER -->
-  <div class="c-wrap">
-    <div class="chart-top" style="background:var(--panel)">
-      <div style="font-family:'Syne',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase" id="chartLbl">EUR/USD · H1</div>
-      <div class="ohlc">
-        <span>O:<span id="oO" class="bull">-</span></span>
-        <span>H:<span id="oH" class="bull">-</span></span>
-        <span>L:<span id="oL" class="bear">-</span></span>
-        <span>C:<span id="oC">-</span></span>
+  <div class="c-wrap" id="centerPanel">
+    <div class="chart-area" id="chartArea" style="flex:1.4">
+      <div class="chart-top" style="background:var(--panel)">
+        <div style="font-family:'Syne',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase" id="chartLbl">EUR/USD · H1</div>
+        <div class="ohlc">
+          <span>O:<span id="oO" class="bull">-</span></span>
+          <span>H:<span id="oH" class="bull">-</span></span>
+          <span>L:<span id="oL" class="bear">-</span></span>
+          <span>C:<span id="oC">-</span></span>
+        </div>
       </div>
+      <canvas id="chart"></canvas>
     </div>
-    <canvas id="chart" style="flex:1.2;min-height:0"></canvas>
-    <div class="bot" style="flex:0.8">
+
+    <!-- DIVIDER chart ↕ bottom -->
+    <div class="vdivider" id="divCV" title="Arrastrar para redimensionar"></div>
+
+    <div class="bot" id="botPanel" style="flex:0.6">
       <div class="tabs">
         <div class="tab active" onclick="stab('candles',this)">Velas</div>
         <div class="tab" onclick="stab('stats',this)">Stats</div>
@@ -276,8 +304,11 @@ canvas#chart{background:var(--panel);display:block}
     </div>
   </div>
 
+  <!-- DIVIDER CENTER ↔ RIGHT -->
+  <div class="divider" id="divCR" title="Arrastrar para redimensionar"></div>
+
   <!-- RIGHT -->
-  <div class="rp">
+  <div class="rp" id="rightPanel" style="width:275px">
     <div class="ptit">📊 Precisión Global</div>
     <div class="ga-card">
       <div class="ga-big" id="gaM" style="color:var(--green)">--%</div>
@@ -776,7 +807,12 @@ function drawChart(id) {
   const canvas=document.getElementById('chart');
   if(!canvas)return;
   const ctx=canvas.getContext('2d'),dpr=window.devicePixelRatio||1;
-  const W=canvas.parentElement.clientWidth,H=canvas.parentElement.clientHeight;
+  const chartArea=document.getElementById('chartArea');
+  const topBar=chartArea?.querySelector('.chart-top');
+  const W=chartArea?chartArea.clientWidth:canvas.parentElement.clientWidth;
+  const areaH=chartArea?chartArea.clientHeight:canvas.parentElement.clientHeight;
+  const topH=topBar?topBar.offsetHeight:0;
+  const H=Math.max(60, areaH-topH);
   canvas.width=W*dpr;canvas.height=H*dpr;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
   ctx.scale(dpr,dpr);
@@ -982,11 +1018,154 @@ function addAsset() {
   switchAsset(id);
 }
 
+// ══════════════════════════════════════════════════════════════
+// RESIZABLE PANELS ENGINE
+// ══════════════════════════════════════════════════════════════
+const RESIZE = {
+  MIN_COL: 140,   // px min width for left/right panels
+  MIN_CENTER: 300, // px min width for center
+  MIN_ROW: 60,    // px min height for chart/bottom areas
+};
+
+function initResizable() {
+  // ── Horizontal: LEFT ↔ CENTER ↔ RIGHT ──
+  setupHDivider(
+    document.getElementById('divLC'),
+    document.getElementById('leftPanel'),
+    document.getElementById('centerPanel'),
+    'left'
+  );
+  setupHDivider(
+    document.getElementById('divCR'),
+    document.getElementById('centerPanel'),
+    document.getElementById('rightPanel'),
+    'right'
+  );
+  // ── Vertical: chart ↕ bottom ──
+  setupVDivider(
+    document.getElementById('divCV'),
+    document.getElementById('chartArea'),
+    document.getElementById('botPanel'),
+    document.getElementById('centerPanel')
+  );
+}
+
+function setupHDivider(divider, panelA, panelB, side) {
+  let startX, startAW, startBW;
+
+  divider.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startX  = e.clientX;
+    startAW = panelA.getBoundingClientRect().width;
+    startBW = panelB.getBoundingClientRect().width;
+    divider.classList.add('dragging');
+    document.body.classList.add('h-resizing');
+
+    function onMove(e) {
+      const dx = e.clientX - startX;
+      const body = document.getElementById('mainBody');
+      const totalW = body.getBoundingClientRect().width;
+
+      if (side === 'left') {
+        // Moving left divider: resize leftPanel & centerPanel
+        const newA = Math.max(RESIZE.MIN_COL, startAW + dx);
+        const newB = Math.max(RESIZE.MIN_CENTER, startBW - dx);
+        panelA.style.width = newA + 'px';
+        panelA.style.flex  = 'none';
+        // center fills remaining
+        panelB.style.flex  = '1';
+        panelB.style.width = '';
+      } else {
+        // Moving right divider: resize centerPanel & rightPanel
+        const newA = Math.max(RESIZE.MIN_CENTER, startAW + dx);
+        const newB = Math.max(RESIZE.MIN_COL, startBW - dx);
+        panelA.style.flex  = '1';
+        panelA.style.width = '';
+        panelB.style.width = newB + 'px';
+        panelB.style.flex  = 'none';
+      }
+      drawChart(ST.active); // redraw canvas on every move
+    }
+
+    function onUp() {
+      divider.classList.remove('dragging');
+      document.body.classList.remove('h-resizing');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      drawChart(ST.active);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  // Double-click to reset to default
+  divider.addEventListener('dblclick', () => {
+    if (side === 'left') {
+      document.getElementById('leftPanel').style.width  = '255px';
+      document.getElementById('leftPanel').style.flex   = 'none';
+      document.getElementById('centerPanel').style.flex = '1';
+      document.getElementById('centerPanel').style.width = '';
+    } else {
+      document.getElementById('centerPanel').style.flex = '1';
+      document.getElementById('centerPanel').style.width = '';
+      document.getElementById('rightPanel').style.width = '275px';
+      document.getElementById('rightPanel').style.flex  = 'none';
+    }
+    drawChart(ST.active);
+  });
+}
+
+function setupVDivider(divider, panelTop, panelBot, container) {
+  let startY, startTH, startBH;
+
+  divider.addEventListener('mousedown', e => {
+    e.preventDefault();
+    startY  = e.clientY;
+    startTH = panelTop.getBoundingClientRect().height;
+    startBH = panelBot.getBoundingClientRect().height;
+    divider.classList.add('dragging');
+    document.body.classList.add('v-resizing');
+
+    function onMove(e) {
+      const dy = e.clientY - startY;
+      const newTop = Math.max(RESIZE.MIN_ROW, startTH + dy);
+      const newBot = Math.max(RESIZE.MIN_ROW, startBH - dy);
+      panelTop.style.flex   = 'none';
+      panelTop.style.height = newTop + 'px';
+      panelBot.style.flex   = 'none';
+      panelBot.style.height = newBot + 'px';
+      drawChart(ST.active);
+    }
+
+    function onUp() {
+      divider.classList.remove('dragging');
+      document.body.classList.remove('v-resizing');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      drawChart(ST.active);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+
+  // Double-click to reset vertical split
+  divider.addEventListener('dblclick', () => {
+    panelTop.style.flex   = '1.4';
+    panelTop.style.height = '';
+    panelBot.style.flex   = '0.6';
+    panelBot.style.height = '';
+    drawChart(ST.active);
+  });
+}
+
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   for (const k of Object.keys(PRESET_ASSETS)) initAsset(k);
   renderAlerts();
   updateAccuracy();
+  initResizable();
   setTimeout(() => {
     document.getElementById('loader').classList.add('gone');
     doUpdate();
