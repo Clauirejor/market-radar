@@ -310,6 +310,72 @@ canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:
 .ov-slider::before{content:'';position:absolute;width:11px;height:11px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s}
 .ov-switch input:checked+.ov-slider{background:var(--accent)}
 .ov-switch input:checked+.ov-slider::before{transform:translateX(13px)}
+
+/* ── INDICATOR SORT TOGGLE ── */
+.ind-sort-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 13px;border-bottom:1px solid var(--border)}
+.ind-sort-lbl{font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:1px}
+.sort-toggle{display:flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.sort-opt{padding:3px 8px;font-size:8px;cursor:pointer;color:var(--text2);transition:all .15s;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+.sort-opt:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.sort-opt.active{background:var(--accent);color:#000;font-weight:700}
+
+/* ── SETTINGS PANEL ── */
+.cfg-overlay{position:fixed;inset:0;z-index:3000;display:none}
+.cfg-overlay.open{display:block}
+.cfg-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+.cfg-panel{position:absolute;top:56px;right:14px;width:340px;background:var(--panel);border:1px solid var(--border2);border-radius:6px;box-shadow:0 16px 60px rgba(0,0,0,.7);overflow:hidden;animation:cfgIn .2s ease}
+@keyframes cfgIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.cfg-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border2)}
+.cfg-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--accent)}
+.cfg-x{cursor:pointer;color:var(--text2);font-size:16px;transition:color .15s;padding:2px 6px}
+.cfg-x:hover{color:var(--text)}
+.cfg-body{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.cfg-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cfg-lbl{font-size:10px;color:var(--text2)}
+.cfg-lbl strong{display:block;color:var(--text);font-size:11px;margin-bottom:2px}
+.cfg-slider{-webkit-appearance:none;appearance:none;width:120px;height:4px;border-radius:2px;background:var(--border2);outline:none;cursor:pointer}
+.cfg-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 6px rgba(0,200,255,.4)}
+.cfg-val{font-size:10px;color:var(--accent);font-weight:700;width:28px;text-align:right}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.theme-btn{padding:8px 6px;border-radius:4px;border:1px solid var(--border2);background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;text-align:center;transition:all .15s}
+.theme-btn:hover{border-color:var(--accent)}
+.theme-btn.active{border-color:var(--accent);background:rgba(0,200,255,.1)}
+.theme-preview{width:24px;height:24px;border-radius:3px;margin:0 auto 4px}
+.cfg-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* ── PATTERN ENGINE PANEL ── */
+.pat-panel{background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:0;overflow:hidden}
+.pat-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+.pat-hdr:hover{background:rgba(255,255,255,.02)}
+.pat-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--accent)}
+.pat-body{padding:10px 12px}
+.pat-match{padding:6px 0;border-bottom:1px solid rgba(22,32,46,.6);display:flex;align-items:flex-start;gap:8px}
+.pat-match:last-child{border-bottom:none}
+.pat-pct{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;flex-shrink:0;line-height:1}
+.pat-desc{font-size:9px;color:var(--text2);line-height:1.5}
+.pat-desc strong{color:var(--text);display:block;font-size:10px;margin-bottom:1px}
+.pat-bar{height:3px;border-radius:2px;margin-top:4px}
+.pat-loading{font-size:9px;color:var(--text2);text-align:center;padding:12px;animation:pulse 1.5s infinite}
+.pat-empty{font-size:9px;color:var(--text3);text-align:center;padding:12px}
+
+/* ── CHART TYPE & OVERLAY CONTROLS ── */
+.chart-ctrl-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ctype-group{display:flex;border:1px solid var(--border2);border-radius:3px;overflow:hidden}
+.ctype-btn{padding:3px 9px;font-size:8px;cursor:pointer;color:var(--text2);transition:all .15s;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.5px;background:transparent;border:none;white-space:nowrap}
+.ctype-btn:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.ctype-btn.active{background:var(--accent);color:#000;font-weight:700}
+
+/* Correlation overlay chips */
+.corr-bar{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.corr-chip{display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;border:1px solid var(--border2);font-size:8px;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);font-family:'Space Mono',monospace;white-space:nowrap}
+.corr-chip:hover{border-color:var(--accent);color:var(--accent)}
+.corr-chip.active{color:#000;font-weight:700;border-color:transparent}
+.corr-chip .chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.corr-add{padding:2px 7px;border-radius:12px;border:1px dashed var(--border2);font-size:8px;cursor:pointer;color:var(--text2);transition:all .15s;background:transparent;font-family:'Space Mono',monospace}
+.corr-add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Correlation legend inside chart */
+.corr-legend-row{display:flex;align-items:center;gap:6px;padding:2px 0}
 </style>
 </head>
 <body style="display:flex;flex-direction:column">
@@ -339,9 +405,82 @@ canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:
       <span id="bellBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center">0</span>
     </button>
     <button class="btn" onclick="requestNotif()" title="Activar notificaciones push">📲</button>
+    <button class="btn" onclick="openSettings()" title="Configuración" style="font-size:13px">⚙️</button>
     <button class="btn" onclick="doUpdate()">↻</button>
   </div>
 </header>
+
+<!-- SETTINGS PANEL -->
+<div class="cfg-overlay" id="cfgOverlay">
+  <div class="cfg-backdrop" onclick="closeSettings()"></div>
+  <div class="cfg-panel">
+    <div class="cfg-hdr">
+      <div class="cfg-title">⚙️ Configuración</div>
+      <div class="cfg-x" onclick="closeSettings()">✕</div>
+    </div>
+    <div class="cfg-body">
+
+      <!-- Font size -->
+      <div class="cfg-row">
+        <div class="cfg-lbl"><strong>Tamaño de letra</strong>Indicadores y etiquetas</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="range" class="cfg-slider" id="cfgFontSize" min="8" max="14" value="10" oninput="applyFontSize(this.value)">
+          <span class="cfg-val" id="cfgFontSizeVal">10px</span>
+        </div>
+      </div>
+
+      <!-- Panel width (left) -->
+      <div class="cfg-row">
+        <div class="cfg-lbl"><strong>Ancho panel izquierdo</strong>Indicadores y señales</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="range" class="cfg-slider" id="cfgPanelW" min="180" max="420" value="255" oninput="applyPanelWidth(this.value)">
+          <span class="cfg-val" id="cfgPanelWVal">255</span>
+        </div>
+      </div>
+
+      <div class="cfg-divider"></div>
+
+      <!-- THEME -->
+      <div>
+        <div class="cfg-lbl" style="margin-bottom:8px"><strong>Tema de color</strong></div>
+        <div class="theme-grid">
+          <div class="theme-btn active" onclick="applyTheme('dark',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#06080d,#0b0f18)"></div>
+            Oscuro
+          </div>
+          <div class="theme-btn" onclick="applyTheme('light',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#f0f2f5,#ffffff)"></div>
+            Claro
+          </div>
+          <div class="theme-btn" onclick="applyTheme('midnight',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#0a0015,#110022)"></div>
+            Midnight
+          </div>
+          <div class="theme-btn" onclick="applyTheme('navy',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#020c1b,#0a192f)"></div>
+            Navy
+          </div>
+          <div class="theme-btn" onclick="applyTheme('forest',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#0a1a0a,#0d1f0d)"></div>
+            Forest
+          </div>
+          <div class="theme-btn" onclick="applyTheme('amber',this)">
+            <div class="theme-preview" style="background:linear-gradient(135deg,#1a1000,#251800)"></div>
+            Amber
+          </div>
+        </div>
+      </div>
+
+      <div class="cfg-divider"></div>
+
+      <!-- Reset -->
+      <div class="cfg-row">
+        <div class="cfg-lbl"><strong>Restablecer</strong>Volver a valores por defecto</div>
+        <button class="btn" onclick="resetSettings()" style="font-size:9px">↺ Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ACCURACY BANNER -->
 <div class="acc-bar">
@@ -378,10 +517,34 @@ canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:
       <div class="tf-c"><div class="tf-l">W1</div><div class="tf-v neut" id="tf4">◆</div></div>
       <div class="tf-c"><div class="tf-l">MN</div><div class="tf-v neut" id="tf5">◆</div></div>
     </div>
-    <div class="sec-l">Indicadores Técnicos</div>
+    <!-- INDICATOR SORT BAR -->
+    <div class="ind-sort-bar">
+      <span class="ind-sort-lbl">Indicadores Técnicos</span>
+      <div class="sort-toggle">
+        <div class="sort-opt active" id="sortNatural" onclick="setIndSort('natural',this)" title="Orden por tipo">≡ Tipo</div>
+        <div class="sort-opt" id="sortSignal"  onclick="setIndSort('signal',this)"  title="Ordenar por señal (▲ arriba)">▲▼ Señal</div>
+      </div>
+    </div>
     <div id="indList"></div>
+
     <div class="sec-l">Niveles Clave</div>
     <div id="lvlList"></div>
+
+    <!-- PATTERN RECOGNITION ENGINE -->
+    <div style="padding:8px 13px 4px">
+      <div class="pat-panel" id="patPanel">
+        <div class="pat-hdr" onclick="togglePatPanel()">
+          <div class="pat-title">🧠 Análisis de Patrones Históricos</div>
+          <span id="patArrow" style="color:var(--text2);font-size:10px">▼</span>
+        </div>
+        <div id="patBody" style="display:none">
+          <div class="pat-body">
+            <div class="pat-loading" id="patLoading">Analizando patrones...</div>
+            <div id="patResults" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- DIVIDER LEFT ↔ CENTER -->
@@ -390,33 +553,48 @@ canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:
   <!-- CENTER -->
   <div class="c-wrap" id="centerPanel">
     <div class="chart-area" id="chartArea" style="flex:1.4">
-      <div class="chart-top" style="background:var(--panel);flex-wrap:wrap;gap:4px">
-        <div style="font-family:'Syne',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;min-width:80px" id="chartLbl">EUR/USD · H1</div>
-        <!-- TIMEFRAME BUTTONS -->
-        <div class="tf-bar" id="tfBar">
-          <button class="tf-btn" onclick="setTF('1s')"  title="Tick/1s">1s</button>
-          <button class="tf-btn active" onclick="setTF('1m')"  title="1 Minuto">1m</button>
-          <button class="tf-btn" onclick="setTF('5m')"  title="5 Minutos">5m</button>
-          <button class="tf-btn" onclick="setTF('15m')" title="15 Minutos">15m</button>
-          <button class="tf-btn" onclick="setTF('1h')"  title="1 Hora">1h</button>
-          <button class="tf-btn" onclick="setTF('4h')"  title="4 Horas">4h</button>
-          <button class="tf-btn" onclick="setTF('1d')"  title="1 Día">1d</button>
-          <button class="tf-btn" onclick="setTF('1w')"  title="1 Semana">1w</button>
-          <button class="tf-btn" onclick="setTF('1M')"  title="1 Mes">1M</button>
-        </div>
-        <!-- SIGNAL OVERLAY TOGGLE -->
-        <label class="ov-toggle" title="Mostrar señales en la gráfica">
-          <div class="ov-switch">
-            <input type="checkbox" id="overlayToggle" checked onchange="drawChart(ST.active)">
-            <div class="ov-slider"></div>
+      <div class="chart-top" style="background:var(--panel);flex-direction:column;padding:0;gap:0">
+        <!-- ROW 1: label + TF buttons + chart type + ohlc -->
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;flex-wrap:wrap;border-bottom:1px solid var(--border)">
+          <div style="font-family:'Syne',sans-serif;font-size:9px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;min-width:80px;flex-shrink:0" id="chartLbl">EUR/USD · H1</div>
+          <!-- TIMEFRAME BUTTONS -->
+          <div class="tf-bar" id="tfBar" style="padding:0">
+            <button class="tf-btn" onclick="setTF('1s')"  title="Tick/1s">1s</button>
+            <button class="tf-btn active" onclick="setTF('1m')"  title="1 Minuto">1m</button>
+            <button class="tf-btn" onclick="setTF('5m')"  title="5 Minutos">5m</button>
+            <button class="tf-btn" onclick="setTF('15m')" title="15 Minutos">15m</button>
+            <button class="tf-btn" onclick="setTF('1h')"  title="1 Hora">1h</button>
+            <button class="tf-btn" onclick="setTF('4h')"  title="4 Horas">4h</button>
+            <button class="tf-btn" onclick="setTF('1d')"  title="1 Día">1d</button>
+            <button class="tf-btn" onclick="setTF('1w')"  title="1 Semana">1w</button>
+            <button class="tf-btn" onclick="setTF('1M')"  title="1 Mes">1M</button>
           </div>
-          <span class="ov-toggle-lbl">Señales</span>
-        </label>
-        <div class="ohlc" style="margin-left:auto">
-          <span>O:<span id="oO" class="bull">-</span></span>
-          <span>H:<span id="oH" class="bull">-</span></span>
-          <span>L:<span id="oL" class="bear">-</span></span>
-          <span>C:<span id="oC">-</span></span>
+          <!-- CHART TYPE -->
+          <div class="ctype-group" title="Tipo de gráfica">
+            <button class="ctype-btn active" id="ctCandle" onclick="setChartType('candle',this)" title="Velas japonesas">🕯 Velas</button>
+            <button class="ctype-btn" id="ctLine"   onclick="setChartType('line',this)"   title="Línea de cierre">📈 Línea</button>
+            <button class="ctype-btn" id="ctArea"   onclick="setChartType('area',this)"   title="Área rellena">◼ Área</button>
+          </div>
+          <!-- SIGNAL OVERLAY TOGGLE -->
+          <label class="ov-toggle" title="Mostrar señales en la gráfica">
+            <div class="ov-switch">
+              <input type="checkbox" id="overlayToggle" checked onchange="drawChart(ST.active)">
+              <div class="ov-slider"></div>
+            </div>
+            <span class="ov-toggle-lbl">Señales</span>
+          </label>
+          <div class="ohlc" style="margin-left:auto">
+            <span>O:<span id="oO" class="bull">-</span></span>
+            <span>H:<span id="oH" class="bull">-</span></span>
+            <span>L:<span id="oL" class="bear">-</span></span>
+            <span>C:<span id="oC">-</span></span>
+          </div>
+        </div>
+        <!-- ROW 2: correlation overlays (visible only when crypto) -->
+        <div id="corrBar" style="display:none;align-items:center;gap:6px;padding:5px 10px;flex-wrap:wrap">
+          <span style="font-size:8px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;flex-shrink:0">Correlación:</span>
+          <div class="corr-bar" id="corrChips"></div>
+          <button class="corr-add" onclick="showCorrPicker()" title="Añadir activo correlacionado">+ Añadir</button>
         </div>
       </div>
       <canvas id="chart"></canvas>
@@ -1461,34 +1639,77 @@ function renderTF(tfs) {
 }
 
 // ── RENDER: INDICATORS ───────────────────────────────────────
+// ── INDICATOR SORT STATE ─────────────────────────────────────
+let IND_SORT = 'natural'; // 'natural' | 'signal'
+
+function setIndSort(mode, el) {
+  IND_SORT = mode;
+  document.querySelectorAll('.sort-opt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderIndicators(ST.active);
+}
+
 function renderIndicators(id) {
   const d=ST.data[id],ind=d.indicators,p=d.price,a=ST.assets[id];
   const list=document.getElementById('indList');
-  const row=(lbl,val,dir,tag)=>{
+
+  const row=(lbl,val,dir,tag,weight=1)=>{
     const vc=dir==='bull'?'bull':dir==='bear'?'bear':'neut';
     const tc=`tag-${vc}`;
-    return `<div class="ind-i"><div><div class="ind-l">${lbl}</div><div class="ind-v ${vc}">${val}</div></div><span class="tag ${tc}">${tag}</span></div>`;
+    const fs=document.documentElement.style.getPropertyValue('--ind-fs')||'10px';
+    return {html:`<div class="ind-i"><div><div class="ind-l">${lbl}</div><div class="ind-v ${vc}">${val}</div></div><span class="tag ${tc}">${tag}</span></div>`,dir,weight};
   };
+
   const bbPct=ind.bb?((p-ind.bb.lower)/(ind.bb.upper-ind.bb.lower)*100).toFixed(0)+'%':'--';
-  list.innerHTML=[
-    row('RSI(14)',ind.rsi14?.toFixed(1)||'--',ind.rsi14<30?'bull':ind.rsi14>70?'bear':'neut',ind.rsi14<30?'↑OVERSOLD':ind.rsi14>70?'↓OVERBOUGHT':'NEUTRO'),
-    row('RSI(7)',ind.rsi7?.toFixed(1)||'--',ind.rsi7<25?'bull':ind.rsi7>75?'bear':'neut',ind.rsi7<25?'↑EXTREMO':ind.rsi7>75?'↓EXTREMO':'NEUTRO'),
-    row('MACD',ind.macd?.macd.toFixed(a.dec>3?5:2)||'--',ind.macd?.hist>0?'bull':'bear',ind.macd?.hist>0?'↑ALCISTA':'↓BAJISTA'),
-    row('BB%',bbPct,p<=ind.bb?.lower?'bull':p>=ind.bb?.upper?'bear':'neut',p<=ind.bb?.lower?'↑REBOTE':p>=ind.bb?.upper?'↓RESIST.':'CENTRO'),
-    row('SMA(20)',fmt(ind.sma20,id),p>ind.sma20?'bull':'bear',p>ind.sma20?'↑ARRIBA':'↓ABAJO'),
-    row('SMA(50)',fmt(ind.sma50,id),p>ind.sma50?'bull':'bear',p>ind.sma50?'↑ARRIBA':'↓ABAJO'),
-    row('SMA(200)',fmt(ind.sma200,id),p>ind.sma200?'bull':'bear',p>ind.sma200?'↑LARGO':'↓LARGO'),
-    row('EMA(9)',fmt(ind.ema9,id),p>ind.ema9?'bull':'bear',p>ind.ema9?'↑SOBRE':'↓BAJO'),
-    row('EMA(21)',fmt(ind.ema21,id),p>ind.ema21?'bull':'bear',p>ind.ema21?'↑SOBRE':'↓BAJO'),
-    row('Estoc. K',ind.stoch?.k.toFixed(1)||'--',ind.stoch?.k<20?'bull':ind.stoch?.k>80?'bear':'neut',ind.stoch?.k<20?'↑OVERSOLD':ind.stoch?.k>80?'↓OVERBOUGHT':'NEUTRO'),
-    row('ATR(14)',ind.atr?(ind.atr*a.uMul).toFixed(1)+' '+a.unit:'--','neut','VOLATILIDAD'),
-    row('CCI(20)',ind.cci?.toFixed(1)||'--',ind.cci<-100?'bull':ind.cci>100?'bear':'neut',ind.cci<-100?'↑OVERSOLD':ind.cci>100?'↓OVERBOUGHT':'NEUTRO'),
-    row('Williams%R',ind.wr?.toFixed(1)||'--',ind.wr<-80?'bull':ind.wr>-20?'bear':'neut',ind.wr<-80?'↑OVERSOLD':ind.wr>-20?'↓OVERBOUGHT':'NEUTRO'),
-    row('Momentum',ind.mom!=null?ind.mom.toFixed(3)+'%':'--',ind.mom>0.05?'bull':ind.mom<-0.05?'bear':'neut',ind.mom>0.05?'↑ALCISTA':ind.mom<-0.05?'↓BAJISTA':'PLANO'),
-    row('ROC(12)',ind.roc!=null?ind.roc.toFixed(3)+'%':'--',ind.roc>0.05?'bull':ind.roc<-0.05?'bear':'neut',ind.roc>0.05?'↑SUBIDA':ind.roc<-0.05?'↓CAÍDA':'PLANO'),
-    row('VWAP',fmt(ind.vwap,id),p>ind.vwap?'bull':'bear',p>ind.vwap?'↑ARRIBA':'↓ABAJO'),
-    row('Ichimoku',ind.ichi?ind.ichi.above?'Bull Cloud':'Bear Cloud':'--',ind.ichi?.above?'bull':'bear',ind.ichi?.above?'↑NUBE B':'↓NUBE B'),
-  ].join('');
+
+  const rows=[
+    row('RSI(14)',ind.rsi14?.toFixed(1)||'--',ind.rsi14<30?'bull':ind.rsi14>70?'bear':'neut',ind.rsi14<30?'↑OVERSOLD':ind.rsi14>70?'↓OVERBOUGHT':'NEUTRO',2),
+    row('RSI(7)',ind.rsi7?.toFixed(1)||'--',ind.rsi7<25?'bull':ind.rsi7>75?'bear':'neut',ind.rsi7<25?'↑EXTREMO':ind.rsi7>75?'↓EXTREMO':'NEUTRO',2),
+    row('MACD',ind.macd?.macd.toFixed(a.dec>3?5:2)||'--',ind.macd?.hist>0?'bull':'bear',ind.macd?.hist>0?'↑ALCISTA':'↓BAJISTA',2),
+    row('BB%',bbPct,p<=ind.bb?.lower?'bull':p>=ind.bb?.upper?'bear':'neut',p<=ind.bb?.lower?'↑REBOTE':p>=ind.bb?.upper?'↓RESIST.':'CENTRO',2),
+    row('SMA(20)',fmt(ind.sma20,id),p>ind.sma20?'bull':'bear',p>ind.sma20?'↑ARRIBA':'↓ABAJO',2),
+    row('SMA(50)',fmt(ind.sma50,id),p>ind.sma50?'bull':'bear',p>ind.sma50?'↑ARRIBA':'↓ABAJO',2),
+    row('SMA(200)',fmt(ind.sma200,id),p>ind.sma200?'bull':'bear',p>ind.sma200?'↑LARGO':'↓LARGO',2),
+    row('EMA(9)',fmt(ind.ema9,id),p>ind.ema9?'bull':'bear',p>ind.ema9?'↑SOBRE':'↓BAJO',1),
+    row('EMA(21)',fmt(ind.ema21,id),p>ind.ema21?'bull':'bear',p>ind.ema21?'↑SOBRE':'↓BAJO',1),
+    row('Estoc. K',ind.stoch?.k.toFixed(1)||'--',ind.stoch?.k<20?'bull':ind.stoch?.k>80?'bear':'neut',ind.stoch?.k<20?'↑OVERSOLD':ind.stoch?.k>80?'↓OVERBOUGHT':'NEUTRO',2),
+    row('ATR(14)',ind.atr?(ind.atr*a.uMul).toFixed(1)+' '+a.unit:'--','neut','VOLATILIDAD',0),
+    row('CCI(20)',ind.cci?.toFixed(1)||'--',ind.cci<-100?'bull':ind.cci>100?'bear':'neut',ind.cci<-100?'↑OVERSOLD':ind.cci>100?'↓OVERBOUGHT':'NEUTRO',2),
+    row('Williams%R',ind.wr?.toFixed(1)||'--',ind.wr<-80?'bull':ind.wr>-20?'bear':'neut',ind.wr<-80?'↑OVERSOLD':ind.wr>-20?'↓OVERBOUGHT':'NEUTRO',1),
+    row('Momentum',ind.mom!=null?ind.mom.toFixed(3)+'%':'--',ind.mom>0.05?'bull':ind.mom<-0.05?'bear':'neut',ind.mom>0.05?'↑ALCISTA':ind.mom<-0.05?'↓BAJISTA':'PLANO',1),
+    row('ROC(12)',ind.roc!=null?ind.roc.toFixed(3)+'%':'--',ind.roc>0.05?'bull':ind.roc<-0.05?'bear':'neut',ind.roc>0.05?'↑SUBIDA':ind.roc<-0.05?'↓CAÍDA':'PLANO',1),
+    row('VWAP',fmt(ind.vwap,id),p>ind.vwap?'bull':'bear',p>ind.vwap?'↑ARRIBA':'↓ABAJO',1),
+    row('Ichimoku',ind.ichi?ind.ichi.above?'Bull Cloud':'Bear Cloud':'--',ind.ichi?.above?'bull':'bear',ind.ichi?.above?'↑NUBE B':'↓NUBE B',2),
+  ];
+
+  // Sort if needed
+  if (IND_SORT === 'signal') {
+    const order = {bull:0, neut:1, bear:2};
+    rows.sort((a,b) => {
+      if (a.dir === b.dir) return b.weight - a.weight; // within same group, higher weight first
+      return order[a.dir] - order[b.dir];
+    });
+
+    // Add group separator headers
+    let lastDir = null;
+    const grouped = [];
+    for (const r of rows) {
+      if (r.dir !== lastDir && r.dir !== 'neut') { // skip neut header for cleanliness but add bull/bear
+        const sepColor = r.dir==='bull'?'rgba(0,232,122,.08)':'rgba(255,45,85,.08)';
+        const sepText  = r.dir==='bull'?'▲ ALCISTAS':'▼ BAJISTAS';
+        const sepCol   = r.dir==='bull'?'var(--green)':'var(--red)';
+        grouped.push(`<div style="padding:4px 13px 2px;background:${sepColor};font-size:8px;font-weight:700;color:${sepCol};letter-spacing:1px;text-transform:uppercase">${sepText}</div>`);
+        lastDir = r.dir;
+      } else if (r.dir === 'neut' && lastDir !== 'neut') {
+        grouped.push(`<div style="padding:4px 13px 2px;background:rgba(255,214,10,.04);font-size:8px;font-weight:700;color:var(--yellow);letter-spacing:1px;text-transform:uppercase">◆ NEUTROS</div>`);
+        lastDir = 'neut';
+      }
+      grouped.push(r.html);
+    }
+    list.innerHTML = grouped.join('');
+  } else {
+    list.innerHTML = rows.map(r=>r.html).join('');
+  }
 }
 
 // ── RENDER: LEVELS ───────────────────────────────────────────
@@ -1886,32 +2107,140 @@ function drawChart(id, hoveredIdx = CHART_STATE.hoveredIdx) {
     }
   }
 
-  // ── CANDLES ──
+  // ── MAIN CHART (candles / line / area) ──
+  const chartType = CHART_TYPE;
   const bw = Math.max(1, Math.min(cW * 0.7, 16));
-  for (let i = 0; i < ca.length; i++) {
-    const c = ca[i], x = toX(i), bull = c.close >= c.open;
-    const isH = i === hoveredIdx;
-    const col = bull ? '#00e87a' : '#ff2d55';
-    const hCol = bull ? '#00ff9a' : '#ff5577';
 
-    if (isH) {
-      ctx.fillStyle = bull ? 'rgba(0,232,122,.07)' : 'rgba(255,45,85,.07)';
-      ctx.fillRect(x - cW/2, PAD.t, cW, cH);
+  if (chartType === 'candle') {
+    // ── JAPANESE CANDLESTICKS ──
+    for (let i = 0; i < ca.length; i++) {
+      const c = ca[i], x = toX(i), bull = c.close >= c.open;
+      const isH = i === hoveredIdx;
+      const col = bull ? '#00e87a' : '#ff2d55';
+      const hCol = bull ? '#00ff9a' : '#ff5577';
+      if (isH) {
+        ctx.fillStyle = bull ? 'rgba(0,232,122,.07)' : 'rgba(255,45,85,.07)';
+        ctx.fillRect(x - cW/2, PAD.t, cW, cH);
+      }
+      ctx.beginPath(); ctx.moveTo(x, toY(c.high)); ctx.lineTo(x, toY(c.low));
+      ctx.strokeStyle = isH ? hCol : col; ctx.lineWidth = isH ? 1.5 : 1; ctx.stroke();
+      const bt = toY(Math.max(c.open,c.close)), bb2 = toY(Math.min(c.open,c.close));
+      const bh = Math.max(1.5, bb2 - bt);
+      ctx.fillStyle = bull ? (isH?'rgba(0,232,122,.95)':'rgba(0,232,122,.75)') : (isH?'rgba(255,45,85,.95)':'rgba(255,45,85,.75)');
+      ctx.fillRect(x - bw/2, bt, bw, bh);
+      ctx.strokeStyle = isH ? hCol : col; ctx.lineWidth = isH ? 1 : 0.5;
+      ctx.strokeRect(x - bw/2, bt, bw, bh);
     }
 
-    // Wick
-    ctx.beginPath(); ctx.moveTo(x, toY(c.high)); ctx.lineTo(x, toY(c.low));
-    ctx.strokeStyle = isH ? hCol : col; ctx.lineWidth = isH ? 1.5 : 1; ctx.stroke();
+  } else if (chartType === 'line' || chartType === 'area') {
+    // ── LINE / AREA ──
+    // Determine line color from overall trend
+    const firstClose = ca[0]?.close || ca[ca.length-1].close;
+    const lastClose  = ca[ca.length-1].close;
+    const trending   = lastClose >= firstClose;
+    const lineCol    = trending ? '#00e87a' : '#ff2d55';
 
-    // Body
-    const bt = toY(Math.max(c.open,c.close)), bb2 = toY(Math.min(c.open,c.close));
-    const bh = Math.max(1.5, bb2 - bt);
-    ctx.fillStyle = bull
-      ? (isH ? 'rgba(0,232,122,.95)' : 'rgba(0,232,122,.75)')
-      : (isH ? 'rgba(255,45,85,.95)' : 'rgba(255,45,85,.75)');
-    ctx.fillRect(x - bw/2, bt, bw, bh);
-    ctx.strokeStyle = isH ? hCol : col; ctx.lineWidth = isH ? 1 : 0.5;
-    ctx.strokeRect(x - bw/2, bt, bw, bh);
+    // Area fill first (under the line)
+    if (chartType === 'area') {
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(ca[0].close));
+      for (let i = 1; i < ca.length; i++) ctx.lineTo(toX(i), toY(ca[i].close));
+      ctx.lineTo(toX(ca.length-1), PAD.t + cH);
+      ctx.lineTo(toX(0), PAD.t + cH);
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(0, PAD.t, 0, PAD.t + cH);
+      grad.addColorStop(0,   trending ? 'rgba(0,232,122,.25)' : 'rgba(255,45,85,.25)');
+      grad.addColorStop(0.7, trending ? 'rgba(0,232,122,.05)' : 'rgba(255,45,85,.05)');
+      grad.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Line itself
+    ctx.beginPath();
+    for (let i = 0; i < ca.length; i++) {
+      i === 0 ? ctx.moveTo(toX(i), toY(ca[i].close)) : ctx.lineTo(toX(i), toY(ca[i].close));
+    }
+    ctx.strokeStyle = lineCol;
+    ctx.lineWidth   = chartType === 'line' ? 1.8 : 1.5;
+    ctx.lineJoin    = 'round';
+    ctx.stroke();
+    ctx.lineJoin    = 'miter';
+
+    // Dot on hovered point
+    if (hoveredIdx >= 0 && hoveredIdx < ca.length) {
+      const hx = toX(hoveredIdx), hy = toY(ca[hoveredIdx].close);
+      ctx.beginPath(); ctx.arc(hx, hy, 4, 0, Math.PI*2);
+      ctx.fillStyle = lineCol; ctx.fill();
+      ctx.beginPath(); ctx.arc(hx, hy, 6, 0, Math.PI*2);
+      ctx.strokeStyle = lineCol + '55'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+  }
+
+  // ── CORRELATION OVERLAYS (normalized line charts) ──
+  const activeCorrs = CORR_OVERLAYS.filter(c => c.active && c.id !== id);
+  if (activeCorrs.length > 0) {
+    // We normalize each overlay to fit in the same price axis as the main chart
+    // using % change from its own first visible candle
+    const mainBase = ca[0]?.close || 1;
+
+    for (const corr of activeCorrs) {
+      const cData = ST.data[corr.id];
+      if (!cData) continue;
+      const cSrc = cData.tfCandles || cData.candles;
+      if (!cSrc || cSrc.length < 2) continue;
+
+      // Align: find candles in cSrc that cover the same time range as ca
+      const tStart = ca[0].time, tEnd = ca[ca.length-1].time;
+      const tRange = tEnd - tStart || 1;
+
+      // Build normalized points: map corr candle times to X positions, % change to Y
+      const corrBase = (() => {
+        // Find corr candle closest to our tStart
+        let best = cSrc[0], bestD = Infinity;
+        for (const cc of cSrc) {
+          const d = Math.abs(cc.time - tStart);
+          if (d < bestD) { bestD = d; best = cc; }
+        }
+        return best.close || 1;
+      })();
+
+      ctx.beginPath();
+      let first = true;
+      for (const cc of cSrc) {
+        if (cc.time < tStart - tRange*0.1 || cc.time > tEnd + tRange*0.1) continue;
+        // Map time to X proportionally
+        const xRatio = (cc.time - tStart) / tRange;
+        const xPx = PAD.l + xRatio * (W - PAD.l - PAD.r);
+        if (xPx < PAD.l || xPx > W - PAD.r) continue;
+
+        // Map normalized % change to Y using the main chart's price axis
+        const pctChange = (cc.close - corrBase) / corrBase;
+        const mappedPrice = mainBase * (1 + pctChange);
+        const yPx = toY(mappedPrice);
+
+        first ? (ctx.moveTo(xPx, yPx), first=false) : ctx.lineTo(xPx, yPx);
+      }
+      ctx.strokeStyle = corr.color;
+      ctx.lineWidth   = 1.5;
+      ctx.globalAlpha = 0.75;
+      ctx.lineJoin    = 'round';
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.lineJoin    = 'miter';
+
+      // Current price label for corr line
+      const lastCC = cSrc[cSrc.length-1];
+      const lastPct = ((lastCC.close - corrBase) / corrBase * 100).toFixed(2);
+      ctx.fillStyle = corr.color;
+      ctx.font = `bold 8px 'Space Mono',monospace`;
+      const labelTxt = `${corr.name.split('/')[0]} ${lastPct>=0?'+':''}${lastPct}%`;
+      const labelX = W - PAD.r - ctx.measureText(labelTxt).width - 4;
+      const labelY = toY(mainBase * (1 + (lastCC.close-corrBase)/corrBase));
+      if (labelY > PAD.t+10 && labelY < PAD.t+cH-4) {
+        ctx.fillText(labelTxt, labelX, Math.max(PAD.t+10, Math.min(PAD.t+cH-4, labelY-4)));
+      }
+    }
   }
 
   // ── CROSSHAIR ──
@@ -1954,7 +2283,10 @@ function drawChart(id, hoveredIdx = CHART_STATE.hoveredIdx) {
   }
 
   // ── LEGEND ──
-  [{c:'rgba(0,200,255,.5)',l:'BB'},{c:'rgba(255,159,10,.8)',l:'EMA9'},{c:'rgba(255,214,10,.7)',l:'SMA20'}].forEach((l,i) => {
+  const legendItems = [{c:'rgba(0,200,255,.5)',l:'BB'},{c:'rgba(255,159,10,.8)',l:'EMA9'},{c:'rgba(255,214,10,.7)',l:'SMA20'}];
+  // Add correlation overlays to legend
+  CORR_OVERLAYS.filter(c=>c.active && c.id!==id).forEach(c => legendItems.push({c:c.color, l:c.name.split('/')[0]}));
+  legendItems.forEach((l,i) => {
     ctx.fillStyle=l.c; ctx.fillRect(PAD.l+i*62, PAD.t+6, 16, 2);
     ctx.fillStyle='rgba(104,120,142,.8)'; ctx.font=`8px 'Space Mono',monospace`;
     ctx.fillText(l.l, PAD.l+i*62+20, PAD.t+10);
@@ -2771,6 +3103,382 @@ function manualAction(dir) {
   if (document.getElementById('alertPanel').style.display!=='none') renderAlertPanel();
 }
 
+
+// ════════════════════════════════════════════════════════════
+// SETTINGS PANEL
+// ════════════════════════════════════════════════════════════
+function openSettings()  { document.getElementById('cfgOverlay').classList.add('open'); }
+function closeSettings() { document.getElementById('cfgOverlay').classList.remove('open'); }
+
+function applyFontSize(px) {
+  document.getElementById('cfgFontSizeVal').textContent = px + 'px';
+  // Apply to indicator list items
+  document.documentElement.style.setProperty('--ind-font', px + 'px');
+  const style = document.getElementById('dynFontStyle') || (() => {
+    const s = document.createElement('style'); s.id = 'dynFontStyle'; document.head.appendChild(s); return s;
+  })();
+  style.textContent = `.ind-l{font-size:${px}px!important}.ind-v{font-size:${Math.round(+px+1)}px!important}.tag{font-size:${Math.max(7,+px-1)}px!important}.tf-l,.sec-l,.ptit,.ga-cl,.ab-lbl{font-size:${Math.max(7,+px-1)}px!important}.ga-cv,.sig-conf{font-size:${Math.round(+px*1.8)}px!important}`;
+}
+
+function applyPanelWidth(w) {
+  document.getElementById('cfgPanelWVal').textContent = w;
+  const lp = document.getElementById('leftPanel');
+  if (lp) { lp.style.width = w + 'px'; lp.style.flex = 'none'; }
+  drawChart(ST.active);
+}
+
+const THEMES = {
+  dark:     { bg:'#06080d', panel:'#0b0f18', panel2:'#0e1420', border:'#16202e', border2:'#1d2b40', text:'#c8d0dc', text2:'#68788e', accent:'#00c8ff' },
+  light:    { bg:'#f0f2f5', panel:'#ffffff', panel2:'#f7f8fa', border:'#dde1e8', border2:'#c8cdd8', text:'#1a2030', text2:'#6b7280', accent:'#0066cc' },
+  midnight: { bg:'#0a0015', panel:'#100020', panel2:'#150028', border:'#280040', border2:'#3a0060', text:'#e0d0f0', text2:'#8060a0', accent:'#cc44ff' },
+  navy:     { bg:'#020c1b', panel:'#0a192f', panel2:'#112240', border:'#1e3a5f', border2:'#2a4a70', text:'#ccd6f6', text2:'#8892b0', accent:'#64ffda' },
+  forest:   { bg:'#0a1a0a', panel:'#0d1f0d', panel2:'#122012', border:'#1a3020', border2:'#234028', text:'#c8dcc8', text2:'#608060', accent:'#44ff88' },
+  amber:    { bg:'#1a1000', panel:'#211500', panel2:'#2a1c00', border:'#3d2800', border2:'#503800', text:'#f0ddb0', text2:'#a08040', accent:'#ffb020' },
+};
+
+function applyTheme(name, el) {
+  const t = THEMES[name]; if (!t) return;
+  const root = document.documentElement;
+  for (const [k,v] of Object.entries(t)) root.style.setProperty('--'+k, v);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  drawChart(ST.active);
+}
+
+function resetSettings() {
+  applyTheme('dark', document.querySelector('.theme-btn'));
+  applyFontSize(10); document.getElementById('cfgFontSize').value = 10;
+  applyPanelWidth(255); document.getElementById('cfgPanelW').value = 255;
+}
+
+// ════════════════════════════════════════════════════════════
+// PATTERN RECOGNITION ENGINE
+// Finds historical candle windows whose indicator fingerprint
+// resembles the current market state, then computes what
+// happened next — giving a probabilistic outlook.
+// ════════════════════════════════════════════════════════════
+
+let patPanelOpen = false;
+let patRunning   = false;
+
+function togglePatPanel() {
+  patPanelOpen = !patPanelOpen;
+  document.getElementById('patBody').style.display  = patPanelOpen ? 'block' : 'none';
+  document.getElementById('patArrow').textContent   = patPanelOpen ? '▲' : '▼';
+  if (patPanelOpen) runPatternEngine(ST.active);
+}
+
+// Fingerprint of current market state (normalized 0-1 values)
+function getFingerprint(ind, price, candles) {
+  const closes = candles.map(c => c.close);
+  const hi = Math.max(...closes), lo = Math.min(...closes);
+  const norm = v => (v - lo) / (hi - lo + 1e-10);
+  return {
+    rsi:   (ind.rsi14 || 50) / 100,
+    rsi7:  (ind.rsi7  || 50) / 100,
+    macdH: ind.macd ? Math.sign(ind.macd.hist) * Math.min(1, Math.abs(ind.macd.hist) / (price * 0.005)) : 0,
+    bbPos: ind.bb ? Math.max(0, Math.min(1, (price - ind.bb.lower) / (ind.bb.upper - ind.bb.lower + 1e-10))) : 0.5,
+    stoch: (ind.stoch?.k || 50) / 100,
+    cci:   Math.max(-1, Math.min(1, (ind.cci || 0) / 200)),
+    wr:    Math.max(-1, Math.min(1, (ind.wr  || -50) / 100)),
+    aboveSma20:  price > (ind.sma20 || price) ? 1 : 0,
+    aboveSma50:  price > (ind.sma50 || price) ? 1 : 0,
+    aboveSma200: price > (ind.sma200|| price) ? 1 : 0,
+    aboveVwap:   price > (ind.vwap  || price) ? 1 : 0,
+    mom:   Math.max(-1, Math.min(1, (ind.mom || 0) / 2)),
+  };
+}
+
+// Euclidean distance between two fingerprints
+function fpDist(a, b) {
+  return Math.sqrt(Object.keys(a).reduce((s,k) => s + Math.pow((a[k]||0)-(b[k]||0),2), 0));
+}
+
+async function runPatternEngine(id) {
+  if (patRunning) return;
+  patRunning = true;
+  const loading = document.getElementById('patLoading');
+  const results = document.getElementById('patResults');
+  loading.style.display = 'block';
+  results.style.display = 'none';
+
+  // Yield to browser so UI updates
+  await new Promise(r => setTimeout(r, 10));
+
+  try {
+    const d = ST.data[id];
+    const a = ST.assets[id];
+    const src = d.tfCandles || d.candles;
+    if (!src || src.length < 60) {
+      loading.textContent = 'Historial insuficiente (min. 60 velas)';
+      patRunning = false; return;
+    }
+
+    // Current fingerprint (last 20 candles context)
+    const lookback = 20;
+    const horizon  = 10; // candles ahead to measure outcome
+    const curInd   = d.indicators;
+    const curPrice = d.price;
+    const curFP    = getFingerprint(curInd, curPrice, src.slice(-lookback));
+
+    // Scan all historical windows
+    const matches = [];
+    const scanEnd = src.length - horizon - 1;
+    const step    = Math.max(1, Math.floor(scanEnd / 400)); // limit iterations
+
+    for (let i = lookback; i < scanEnd; i += step) {
+      // Compute mini-indicators for this window
+      const window  = src.slice(i - lookback, i);
+      const prices  = window.map(c => c.close);
+      const wPrice  = prices[prices.length - 1];
+
+      // Fast approximate indicators
+      const wRsi = (() => {
+        let g=0,l=0;
+        for(let j=1;j<prices.length;j++){const d=prices[j]-prices[j-1];d>0?g+=d:l+=Math.abs(d);}
+        const ag=g/14,al=l/14;return al===0?100:100-100/(1+ag/al);
+      })();
+      const wSma20 = prices.slice(-20).reduce((s,v)=>s+v,0)/20;
+      const wHi  = Math.max(...window.map(c=>c.high));
+      const wLo  = Math.min(...window.map(c=>c.low));
+      const wStochK = ((wPrice-wLo)/(wHi-wLo+1e-10))*100;
+
+      const wFP = {
+        rsi: wRsi/100, rsi7: wRsi/100,
+        macdH: 0, // skip for speed
+        bbPos: (wPrice-wLo)/(wHi-wLo+1e-10),
+        stoch: wStochK/100, cci: 0, wr: (wHi-wPrice)/(wHi-wLo+1e-10)*-1,
+        aboveSma20: wPrice>wSma20?1:0, aboveSma50: wPrice>wSma20?1:0, aboveSma200: wPrice>wSma20?1:0,
+        aboveVwap: wPrice>wSma20?1:0, mom: (wPrice/prices[Math.max(0,prices.length-10)]-1)*10,
+      };
+
+      const dist = fpDist(curFP, wFP);
+      if (dist > 0.35) continue; // too different
+
+      // Measure what happened next
+      const futureCandles = src.slice(i, i + horizon);
+      if (futureCandles.length < horizon) continue;
+      const futureHigh  = Math.max(...futureCandles.map(c=>c.high));
+      const futureLow   = Math.min(...futureCandles.map(c=>c.low));
+      const futureClose = futureCandles[futureCandles.length-1].close;
+      const retPct  = ((futureClose - wPrice) / wPrice) * 100;
+      const maxUp   = ((futureHigh  - wPrice) / wPrice) * 100;
+      const maxDown = ((futureLow   - wPrice) / wPrice) * 100;
+
+      matches.push({ dist, retPct, maxUp, maxDown, candleIdx: i, time: src[i].time, similarity: Math.max(0, 1 - dist/0.35) });
+    }
+
+    if (!matches.length) {
+      loading.textContent = 'No se encontraron patrones similares';
+      patRunning = false; return;
+    }
+
+    // Sort by similarity (lowest dist = most similar)
+    matches.sort((a,b) => a.dist - b.dist);
+    const top = matches.slice(0, Math.min(30, matches.length)); // top 30 matches
+
+    // Aggregate statistics
+    const bullish  = top.filter(m => m.retPct > 0);
+    const bearish  = top.filter(m => m.retPct < 0);
+    const bullPct  = Math.round(bullish.length / top.length * 100);
+    const bearPct  = 100 - bullPct;
+    const avgRet   = top.reduce((s,m)=>s+m.retPct,0) / top.length;
+    const avgMaxUp = top.reduce((s,m)=>s+m.maxUp,0)  / top.length;
+    const avgMaxDn = top.reduce((s,m)=>s+m.maxDown,0) / top.length;
+    const avgSim   = Math.round(top.reduce((s,m)=>s+m.similarity,0) / top.length * 100);
+
+    // Build output
+    const dir     = bullPct >= 55 ? 'LONG' : bearPct >= 55 ? 'SHORT' : 'NEUTRO';
+    const dirCol  = dir==='LONG'?'var(--green)':dir==='SHORT'?'var(--red)':'var(--yellow)';
+    const dirSymb = dir==='LONG'?'▲':dir==='SHORT'?'▼':'◆';
+    const tfCfg   = TF_CONFIG[getActiveTF(id)] || {};
+    const horiLbl = `${horizon} velas (${tfCfg.lbl || getActiveTF(id)})`;
+
+    const strongConf = Math.max(bullPct, bearPct);
+    const confColor  = strongConf>=70?'var(--green)':strongConf>=55?'var(--yellow)':'var(--text2)';
+
+    results.innerHTML = `
+      <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:9px;color:var(--text2)">${top.length} patrones similares · similitud media ${avgSim}%</span>
+          <span style="font-size:10px;font-weight:700;color:${dirCol}">${dirSymb} ${dir}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          <div style="background:rgba(0,232,122,.07);border-radius:3px;padding:6px;text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--green)">${bullPct}%</div>
+            <div style="font-size:8px;color:var(--text2)">subió después</div>
+          </div>
+          <div style="background:rgba(255,45,85,.07);border-radius:3px;padding:6px;text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--red)">${bearPct}%</div>
+            <div style="font-size:8px;color:var(--text2)">bajó después</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-match">
+        <div>
+          <div style="font-size:9px;color:var(--text2);margin-bottom:3px">Comportamiento esperado en ${horiLbl}</div>
+          <div style="display:flex;gap:12px;font-size:9px">
+            <span>Retorno medio: <strong style="color:${avgRet>=0?'var(--green)':'var(--red)'}">${avgRet>=0?'+':''}${avgRet.toFixed(2)}%</strong></span>
+          </div>
+          <div style="display:flex;gap:12px;font-size:9px;margin-top:2px">
+            <span>Máx. subida: <strong class="bull">+${avgMaxUp.toFixed(2)}%</strong></span>
+            <span>Máx. caída: <strong class="bear">${avgMaxDn.toFixed(2)}%</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pat-match" style="border-bottom:none">
+        <div style="width:100%">
+          <div style="font-size:8px;color:var(--text2);margin-bottom:5px">Confianza estadística (${top.length} muestras)</div>
+          <div style="height:6px;background:var(--border2);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${strongConf}%;background:linear-gradient(90deg,${confColor},${confColor}88);border-radius:3px;transition:width 1s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--text2);margin-top:3px">
+            <span>50% = aleatorio</span><span style="color:${confColor};font-weight:700">${strongConf}% ${strongConf>=65?'✓ Significativo':'⚠ Débil'}</span>
+          </div>
+          <div style="margin-top:6px;font-size:8px;color:var(--text3);line-height:1.5">
+            ⚠ Análisis estadístico histórico. No garantiza resultados futuros. Úsalo como referencia adicional junto con los indicadores técnicos.
+          </div>
+        </div>
+      </div>
+    `;
+
+    loading.style.display  = 'none';
+    results.style.display  = 'block';
+  } catch(e) {
+    loading.textContent = 'Error en el análisis: ' + e.message;
+    console.error('Pattern engine error:', e);
+  }
+  patRunning = false;
+}
+
+// Re-run pattern engine when asset changes (if panel open)
+const _origSwitchAsset = switchAsset;
+function switchAsset(id) {
+  _origSwitchAsset(id);
+  if (patPanelOpen) {
+    document.getElementById('patLoading').textContent = 'Analizando patrones...';
+    document.getElementById('patLoading').style.display = 'block';
+    document.getElementById('patResults').style.display = 'none';
+    setTimeout(() => runPatternEngine(id), 300);
+  }
+}
+
+
+// ════════════════════════════════════════════════════════════
+// CHART TYPE ENGINE
+// ════════════════════════════════════════════════════════════
+let CHART_TYPE = 'candle'; // 'candle' | 'line' | 'area'
+
+function setChartType(type, el) {
+  CHART_TYPE = type;
+  document.querySelectorAll('.ctype-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  drawChart(ST.active);
+}
+
+// ════════════════════════════════════════════════════════════
+// CORRELATION OVERLAY ENGINE
+// ════════════════════════════════════════════════════════════
+
+// Pre-defined correlation options with distinct colors
+const CORR_COLORS = ['#ff9f0a','#bf5af2','#ff6b35','#00c8ff','#ff2d55','#ffd60a','#34c759','#5ac8fa'];
+
+const CORR_PRESETS = [
+  { id:'btc',  name:'BTC/USD',  color:'#ff9f0a' },
+  { id:'eth',  name:'ETH/USD',  color:'#627eea' },
+  { id:'sol',  name:'SOL/USD',  color:'#9945ff' },
+  { id:'bnb',  name:'BNB/USD',  color:'#f3ba2f' },
+  { id:'eurusd',name:'EUR/USD', color:'#00c8ff' },
+  { id:'gold', name:'XAU/USD',  color:'#ffd60a' },
+  { id:'sp500',name:'S&P 500',  color:'#bf5af2' },
+];
+
+// Active correlation overlays
+let CORR_OVERLAYS = []; // [{id, name, color, active}]
+
+function initCorrOverlays() {
+  // Default: BTC always available as correlation for crypto
+  CORR_OVERLAYS = CORR_PRESETS.map(p => ({ ...p, active: false }));
+}
+
+function updateCorrBar(id) {
+  const a = ST.assets[id];
+  const corrBar = document.getElementById('corrBar');
+  // Show correlation bar for all assets (useful to compare BTC to altcoins, etc)
+  corrBar.style.display = 'flex';
+
+  // Render chips for active corr overlays (excluding current asset)
+  const chips = document.getElementById('corrChips');
+  const available = CORR_OVERLAYS.filter(c => c.id !== id);
+
+  chips.innerHTML = available.filter(c => c.active).map(c => `
+    <div class="corr-chip active" style="background:${c.color}22;border-color:${c.color}" onclick="toggleCorr('${c.id}')">
+      <div class="chip-dot" style="background:${c.color}"></div>
+      ${c.name.split('/')[0]}
+      <span style="opacity:.6;margin-left:2px">✕</span>
+    </div>
+  `).join('');
+
+  if (!available.some(c=>c.active)) {
+    chips.innerHTML = '<span style="font-size:8px;color:var(--text3)">Sin correlaciones activas</span>';
+  }
+}
+
+function toggleCorr(corrId) {
+  const c = CORR_OVERLAYS.find(x => x.id === corrId);
+  if (!c) return;
+  c.active = !c.active;
+  // Make sure the correlated asset is loaded
+  if (c.active && ST.assets[corrId] && !ST.data[corrId]?.candles?.length) {
+    initAsset(corrId);
+  }
+  updateCorrBar(ST.active);
+  drawChart(ST.active);
+}
+
+function showCorrPicker() {
+  const id = ST.active;
+  const modal = document.getElementById('corrPickerModal');
+  const list  = document.getElementById('corrPickerList');
+
+  const available = CORR_OVERLAYS.filter(c => c.id !== id);
+  list.innerHTML = available.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:4px;border:1px solid ${c.active?c.color:'var(--border2)'};background:${c.active?c.color+'11':'transparent'};cursor:pointer;transition:all .15s" onclick="toggleCorr('${c.id}');updateCorrPickerUI()">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${c.color}"></div>
+        <div>
+          <div style="font-size:11px;color:var(--text);font-weight:700">${c.name}</div>
+          <div style="font-size:8px;color:var(--text2)">${ST.assets[c.id]?.type||'activo'} · ${ST.dataSource[c.id]||'pendiente'}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:${c.active?c.color:'var(--text2)'}">${c.active?'✓':'+'}</div>
+    </div>
+  `).join('');
+
+  modal.style.display = 'block';
+}
+
+function updateCorrPickerUI() {
+  // Re-render picker without closing it
+  showCorrPicker();
+  updateCorrBar(ST.active);
+  drawChart(ST.active);
+}
+
+function hideCorrPicker() {
+  document.getElementById('corrPickerModal').style.display = 'none';
+}
+
+// Hook switchAsset to update corr bar
+const _origSwitchAsset2 = switchAsset;
+function switchAsset(id) {
+  _origSwitchAsset2(id);
+  updateCorrBar(id);
+}
+
+
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   for (const k of Object.keys(PRESET_ASSETS)) {
@@ -2782,6 +3490,8 @@ window.addEventListener('load', () => {
   initResizable();
   setTimeout(() => {
     document.getElementById('loader').classList.add('gone');
+    initCorrOverlays();
+    updateCorrBar(ST.active);
     fullRender(ST.active);
     renderBar();
     updateSourceBadge(ST.active);
@@ -2794,6 +3504,21 @@ window.addEventListener('load', () => {
 
 window.addEventListener('resize', () => drawChart(ST.active));
 </script>
+
+<!-- CORRELATION PICKER MODAL -->
+<div id="corrPickerModal" style="display:none;position:fixed;inset:0;z-index:4000">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px)" onclick="hideCorrPicker()"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border:1px solid var(--border2);border-radius:6px;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.7);overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border2)">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--accent)">📊 Añadir correlación</div>
+      <div style="cursor:pointer;color:var(--text2);font-size:16px" onclick="hideCorrPicker()">✕</div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:9px;color:var(--text2);margin-bottom:10px">Selecciona activos para superponer en la gráfica en modo línea normalizado:</div>
+      <div id="corrPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+  </div>
+</div>
 
 <!-- CANDLE TOOLTIP -->
 <div id="candleTooltip">
