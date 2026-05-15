@@ -535,70 +535,497 @@ canvas#chart{background:var(--panel);display:block;width:100%;flex:1;min-height:
 // CLIRENE FUTURE — MOTOR MULTI-ACTIVO CON ACTIVOS PERSONALIZADOS
 // ════════════════════════════════════════════════════════════
 
-// ── ACTIVOS PREDEFINIDOS ─────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// CLIRENE FUTURE — DATOS REALES: BINANCE + TWELVE DATA
+// ════════════════════════════════════════════════════════════
+
+const TWELVE_KEY = '81e949f97a8744a9bcbbf530d6bf14d9';
+const TWELVE_BASE = 'https://api.twelvedata.com';
+
+// ── DEFINICIÓN DE ACTIVOS ────────────────────────────────────
+// source: 'binance' | 'twelve'
+// mode:   'trading' | 'longterm'
+// Para longterm crypto: entrada, objetivo, zonas de swing
 const PRESET_ASSETS = {
-  eurusd: { id:'eurusd', name:'EUR/USD', icon:'💶', base:1.0852, vol:0.00028, dec:5, unit:'pip', uMul:10000, color:'#00c8ff', type:'forex' },
-  gold:   { id:'gold',   name:'XAU/USD', icon:'🥇', base:2352,   vol:2.4,     dec:2, unit:'$',   uMul:1,    color:'#ffd60a', type:'commodity' },
-  dax:    { id:'dax',    name:'DAX 40',  icon:'🇩🇪', base:18210,  vol:22,      dec:1, unit:'pts', uMul:1,    color:'#00e87a', type:'index' },
-  jpyusd: { id:'jpyusd', name:'USD/JPY', icon:'🇯🇵', base:149.52, vol:0.11,    dec:3, unit:'pip', uMul:100,  color:'#ff9f0a', type:'forex' },
-  btc:    { id:'btc',    name:'BTC/USD', icon:'₿',   base:61800,  vol:170,     dec:0, unit:'$',   uMul:1,    color:'#ff9f0a', type:'crypto' },
-  oil:    { id:'oil',    name:'BRENT',   icon:'🛢',   base:83.4,   vol:0.35,    dec:2, unit:'$',   uMul:1,    color:'#8e6020', type:'commodity' },
-  sp500:  { id:'sp500',  name:'S&P 500', icon:'🇺🇸', base:5195,   vol:11,      dec:1, unit:'pts', uMul:1,    color:'#bf5af2', type:'index' },
+  // ── CRYPTO TRADING (Binance WebSocket, tiempo real) ──
+  btc:  { id:'btc',  name:'BTC/USD',  icon:'₿',   dec:2, unit:'$',   uMul:1,    color:'#ff9f0a', type:'crypto',    source:'binance', binanceSym:'btcusdt',  mode:'trading' },
+  eth:  { id:'eth',  name:'ETH/USD',  icon:'Ξ',   dec:2, unit:'$',   uMul:1,    color:'#627eea', type:'crypto',    source:'binance', binanceSym:'ethusdt',  mode:'trading' },
+  bnb:  { id:'bnb',  name:'BNB/USD',  icon:'🔶',  dec:2, unit:'$',   uMul:1,    color:'#f3ba2f', type:'crypto',    source:'binance', binanceSym:'bnbusdt',  mode:'trading' },
+  sol:  { id:'sol',  name:'SOL/USD',  icon:'◎',   dec:3, unit:'$',   uMul:1,    color:'#9945ff', type:'crypto',    source:'binance', binanceSym:'solusdt',  mode:'trading' },
+
+  // ── CRYPTO LARGO PLAZO (Binance WebSocket + análisis semanal) ──
+  sui:  { id:'sui',  name:'SUI/USD',  icon:'🔵',  dec:4, unit:'$',   uMul:1,    color:'#4da2ff', type:'crypto',    source:'binance', binanceSym:'suiusdt',  mode:'longterm',
+          lt: { entry: 0.50, target: 10.0, buyZones: [0.60, 0.80, 1.10], sellZones: [3.50, 5.00, 7.50], holding: 0 } },
+
+  // ── FOREX (Twelve Data, cada 60s) ──
+  eurusd: { id:'eurusd', name:'EUR/USD', icon:'💶', dec:5, unit:'pip', uMul:10000, color:'#00c8ff', type:'forex',  source:'twelve', twelveSym:'EUR/USD',   mode:'trading' },
+  jpyusd: { id:'jpyusd', name:'USD/JPY', icon:'🇯🇵', dec:3, unit:'pip', uMul:100,  color:'#ff9f0a', type:'forex',  source:'twelve', twelveSym:'USD/JPY',   mode:'trading' },
+
+  // ── COMMODITIES (Twelve Data) ──
+  gold:   { id:'gold',   name:'XAU/USD', icon:'🥇', dec:2, unit:'$',   uMul:1,    color:'#ffd60a', type:'commodity', source:'twelve', twelveSym:'XAU/USD', mode:'trading' },
+
+  // ── ÍNDICES (Twelve Data) ──
+  sp500:  { id:'sp500',  name:'S&P 500', icon:'🇺🇸', dec:2, unit:'pts', uMul:1,    color:'#bf5af2', type:'index',  source:'twelve', twelveSym:'SPX',       mode:'trading' },
+  dax:    { id:'dax',    name:'DAX 40',  icon:'🇩🇪', dec:2, unit:'pts', uMul:1,    color:'#00e87a', type:'index',  source:'twelve', twelveSym:'DAX',       mode:'trading' },
+
+  // ── ACCIONES LARGO PLAZO (Twelve Data, análisis semanal) ──
+  nvda:   { id:'nvda',   name:'NVIDIA',  icon:'🟢', dec:2, unit:'$',   uMul:1,    color:'#76b900', type:'stock',  source:'twelve', twelveSym:'NVDA',      mode:'longterm',
+            lt: { entry: null, target: null, buyZones: [], sellZones: [], holding: 0 } },
+  aapl:   { id:'aapl',   name:'APPLE',   icon:'🍎', dec:2, unit:'$',   uMul:1,    color:'#a2aaad', type:'stock',  source:'twelve', twelveSym:'AAPL',      mode:'longterm',
+            lt: { entry: null, target: null, buyZones: [], sellZones: [], holding: 0 } },
 };
 
 // ── ESTADO GLOBAL ────────────────────────────────────────────
 const ST = {
-  assets: { ...PRESET_ASSETS },     // dinámico — se añaden activos aquí
-  active: 'eurusd',
-  data: {},                         // por activo: { price, candles, history, indicators, cooldown, wins, losses, lastSig }
+  assets: { ...PRESET_ASSETS },
+  active: 'btc',
+  data: {},
   notif: false,
   updateCount: 0,
   gWins: 0,
   gLosses: 0,
   alerts: [],
   pending: [],
+  wsConnections: {},       // Binance WebSocket por símbolo
+  twelveQueue: [],         // cola de activos Twelve Data
+  twelveIdx: 0,            // índice rotativo para no superar rate limit
+  dataSource: {},          // 'live-binance' | 'live-twelve' | 'simulated' por activo
 };
 
 // ── NOTICIAS POR TIPO ────────────────────────────────────────
 const NEWS_TYPES = {
-  forex:     [{t:'08:30',tx:'IPC Eurozona 2.4% vs est 2.3% — supera expectativas',i:'h'},{t:'13:30',tx:'Nóminas no agrícolas EE.UU. pendientes esta semana',i:'h'},{t:'10:00',tx:'PMI Manufacturero Alemania 47.3 — contracción',i:'m'},{t:'15:00',tx:'Discurso Lagarde — BCE postura hawkish esperada',i:'h'},{t:'09:15',tx:'Producción industrial Francia -0.3% MoM',i:'l'}],
-  index:     [{t:'09:00',tx:'PMI Compuesto: 50.1 — ligera expansión',i:'m'},{t:'11:00',tx:'Pedidos de fábrica +0.8% MoM, mejor de lo esperado',i:'h'},{t:'15:30',tx:'Sector tecnológico débil tras revisión de guías',i:'m'},{t:'08:00',tx:'Banco central mantiene tipos: positivo para bolsas',i:'h'},{t:'16:00',tx:'Cierre Wall Street: S&P 500 +0.4% en máximos semanales',i:'m'}],
-  crypto:    [{t:'16:00',tx:'ETF flujos netos positivos por 5ª semana consecutiva',i:'h'},{t:'10:30',tx:'Hashrate de red en máximos históricos',i:'m'},{t:'14:00',tx:'Reguladores aprueban nuevos instrumentos derivados',i:'h'},{t:'09:00',tx:'Actualización de protocolo completada sin incidencias',i:'l'},{t:'20:00',tx:'Ballenas acumulando posiciones: on-chain data',i:'m'}],
-  commodity: [{t:'16:30',tx:'Inventarios EIA -3.2M barriles — debajo de estimados',i:'h'},{t:'09:00',tx:'OPEC+ mantiene recortes de producción hasta fin de año',i:'h'},{t:'14:00',tx:'Tensiones geopolíticas: riesgo de suministro',i:'h'},{t:'11:00',tx:'Demanda China: revisión al alza +2%',i:'m'},{t:'08:30',tx:'Dólar en máximos presiona commodities',i:'m'}],
-  stock:     [{t:'21:00',tx:'Resultados Q3: BPA supera estimados en 12%',i:'h'},{t:'14:30',tx:'Guías de ingresos revisadas al alza',i:'h'},{t:'09:30',tx:'Apertura alcista tras datos macro favorables',i:'m'},{t:'16:00',tx:'Volumen 3x la media: posible movimiento institucional',i:'m'},{t:'11:00',tx:'Analistas elevan precio objetivo +15%',i:'l'}],
-  bond:      [{t:'14:00',tx:'Subasta de deuda: buena demanda, yield cae 5 pb',i:'h'},{t:'10:00',tx:'Inflación subyacente reduce expectativas de subidas',i:'h'},{t:'09:00',tx:'Curva de tipos se aplana — señal de ralentización',i:'m'},{t:'15:30',tx:'FED minutes: pausa en subidas parece cercana',i:'h'},{t:'08:30',tx:'Flujos hacia renta fija en máximos de 6 meses',i:'m'}],
+  forex:     [{t:'08:30',tx:'IPC Eurozona 2.4% vs est 2.3% — supera expectativas',i:'h'},{t:'13:30',tx:'Nóminas no agrícolas EE.UU. pendientes esta semana',i:'h'},{t:'10:00',tx:'PMI Manufacturero Alemania 47.3 — contracción',i:'m'},{t:'15:00',tx:'Discurso Lagarde — BCE postura hawkish esperada',i:'h'}],
+  index:     [{t:'09:00',tx:'PMI Compuesto: 50.1 — ligera expansión',i:'m'},{t:'11:00',tx:'Pedidos de fábrica +0.8% MoM, mejor de lo esperado',i:'h'},{t:'08:00',tx:'Banco central mantiene tipos: positivo para bolsas',i:'h'},{t:'16:00',tx:'Cierre Wall Street: S&P 500 +0.4% en máximos semanales',i:'m'}],
+  crypto:    [{t:'16:00',tx:'ETF flujos netos positivos por 5ª semana consecutiva',i:'h'},{t:'10:30',tx:'Hashrate de red en máximos históricos',i:'m'},{t:'14:00',tx:'Reguladores aprueban nuevos instrumentos derivados',i:'h'},{t:'20:00',tx:'Ballenas acumulando posiciones: on-chain data',i:'m'}],
+  commodity: [{t:'16:30',tx:'Inventarios EIA -3.2M barriles — debajo de estimados',i:'h'},{t:'09:00',tx:'OPEC+ mantiene recortes de producción hasta fin de año',i:'h'},{t:'14:00',tx:'Tensiones geopolíticas: riesgo de suministro',i:'h'}],
+  stock:     [{t:'21:00',tx:'Resultados Q3: BPA supera estimados en 12%',i:'h'},{t:'14:30',tx:'Guías de ingresos revisadas al alza',i:'h'},{t:'09:30',tx:'Apertura alcista tras datos macro favorables',i:'m'},{t:'11:00',tx:'Analistas elevan precio objetivo +15%',i:'l'}],
+  bond:      [{t:'14:00',tx:'Subasta de deuda: buena demanda, yield cae 5 pb',i:'h'},{t:'10:00',tx:'Inflación subyacente reduce expectativas de subidas',i:'h'}],
 };
 
-// ── INICIALIZAR DATOS DE ACTIVO ──────────────────────────────
+// ════════════════════════════════════════════════════════════
+// FUENTE 1: BINANCE WEBSOCKET (Crypto, tiempo real)
+// ════════════════════════════════════════════════════════════
+
+function connectBinance(id) {
+  const a = ST.assets[id];
+  if (!a?.binanceSym) return;
+  const sym = a.binanceSym.toLowerCase();
+  const url = `wss://stream.binance.com:9443/ws/${sym}@kline_1m`;
+
+  // Cerrar conexión previa si existe
+  if (ST.wsConnections[id]) {
+    try { ST.wsConnections[id].close(); } catch(e) {}
+  }
+
+  const ws = new WebSocket(url);
+  ST.wsConnections[id] = ws;
+
+  ws.onopen = () => {
+    ST.dataSource[id] = 'live-binance';
+    updateSourceBadge(id);
+    console.log(`✅ Binance WS conectado: ${a.name}`);
+  };
+
+  ws.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      const k = msg.k; // kline data
+      if (!k) return;
+
+      const d = ST.data[id];
+      if (!d) return;
+
+      const newPrice = parseFloat(k.c);  // close price
+      const open     = parseFloat(k.o);
+      const high     = parseFloat(k.h);
+      const low      = parseFloat(k.l);
+      const vol      = parseFloat(k.v);
+      const time     = k.t; // kline open time
+      const isClosed = k.x; // true when candle closes
+
+      d.price = +newPrice.toFixed(a.dec);
+      d.history.push(d.price);
+      if (d.history.length > 1000) d.history.shift();
+
+      // Actualizar última vela o crear nueva
+      const lastCandle = d.candles[d.candles.length - 1];
+      if (lastCandle && lastCandle.time === time) {
+        lastCandle.close = d.price;
+        lastCandle.high  = Math.max(lastCandle.high, high);
+        lastCandle.low   = Math.min(lastCandle.low, low);
+        lastCandle.volume = vol;
+      } else if (isClosed) {
+        d.candles.push({ time, open: +open.toFixed(a.dec), high: +high.toFixed(a.dec), low: +low.toFixed(a.dec), close: d.price, volume: vol });
+        if (d.candles.length > 500) d.candles.shift();
+      }
+
+      // Re-render si es el activo activo
+      if (ST.active === id) {
+        compute(id);
+        const sig = calcSignal(id);
+        d.lastSig = sig.dir;
+        renderSignal(sig);
+        renderTF(multiTF(id));
+        renderIndicators(id);
+        renderLevels(id);
+        drawChart(id);
+        renderCandleTable(id);
+        if (id === ST.active) renderLTPanel(id);
+      } else {
+        compute(id);
+        const sig = calcSignal(id);
+        d.lastSig = sig.dir;
+      }
+
+      // Actualizar tab price
+      renderBar();
+      updateHeader(id);
+    } catch(e) { console.warn('WS parse error', e); }
+  };
+
+  ws.onerror = (e) => {
+    ST.dataSource[id] = 'simulated';
+    updateSourceBadge(id);
+    console.warn(`❌ Binance WS error ${a.name}:`, e);
+  };
+
+  ws.onclose = () => {
+    // Reconectar tras 5s si el activo sigue en la lista
+    setTimeout(() => {
+      if (ST.assets[id]) connectBinance(id);
+    }, 5000);
+  };
+}
+
+// Cargar velas históricas de Binance REST (para inicializar indicadores)
+async function loadBinanceHistory(id) {
+  const a = ST.assets[id];
+  const sym = a.binanceSym.toUpperCase();
+  const url = `https://api.binance.com/api/v3/klines?symbol=${sym}&interval=1h&limit=200`;
+  try {
+    const res = await fetch(url);
+    const raw = await res.json();
+    const d = ST.data[id];
+    d.candles = raw.map(k => ({
+      time:   k[0],
+      open:   parseFloat(k[1]),
+      high:   parseFloat(k[2]),
+      low:    parseFloat(k[3]),
+      close:  parseFloat(k[4]),
+      volume: parseFloat(k[5]),
+    }));
+    d.history = d.candles.map(c => c.close);
+    d.price   = d.candles[d.candles.length - 1].close;
+    compute(id);
+    if (ST.active === id) fullRender(id);
+    console.log(`📊 Binance historial cargado: ${a.name} (${d.candles.length} velas)`);
+  } catch(e) {
+    console.warn(`⚠️ Binance historial falló para ${a.name}, usando simulación`);
+    initAssetSimulated(id);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// FUENTE 2: TWELVE DATA REST (Forex, Acciones, Índices, Commodities)
+// ════════════════════════════════════════════════════════════
+
+async function loadTwelveHistory(id) {
+  const a = ST.assets[id];
+  const sym = encodeURIComponent(a.twelveSym);
+  // Para largo plazo usamos velas semanales (1week), para trading horarias (1h)
+  const interval = a.mode === 'longterm' ? '1week' : '1h';
+  const url = `${TWELVE_BASE}/time_series?symbol=${sym}&interval=${interval}&outputsize=200&apikey=${TWELVE_KEY}`;
+  try {
+    const res = await fetch(url);
+    const raw = await res.json();
+    if (raw.status === 'error' || !raw.values) throw new Error(raw.message || 'No data');
+
+    const d = ST.data[id];
+    // Twelve Data viene en orden inverso (más reciente primero), invertir
+    const values = [...raw.values].reverse();
+    d.candles = values.map(v => ({
+      time:   new Date(v.datetime).getTime(),
+      open:   parseFloat(v.open),
+      high:   parseFloat(v.high),
+      low:    parseFloat(v.low),
+      close:  parseFloat(v.close),
+      volume: parseFloat(v.volume || 0),
+    }));
+    d.history = d.candles.map(c => c.close);
+    d.price   = d.candles[d.candles.length - 1].close;
+    compute(id);
+    if (ST.active === id) fullRender(id);
+    console.log(`📊 Twelve historial cargado: ${a.name} (${d.candles.length} velas ${interval})`);
+  } catch(e) {
+    console.warn(`⚠️ Twelve Data falló para ${a.name}:`, e.message);
+    initAssetSimulated(id);
+  }
+}
+
+async function fetchTwelvePrice(id) {
+  const a = ST.assets[id];
+  const sym = encodeURIComponent(a.twelveSym);
+  const url = `${TWELVE_BASE}/price?symbol=${sym}&apikey=${TWELVE_KEY}`;
+  try {
+    const res = await fetch(url);
+    const raw = await res.json();
+    if (!raw.price) throw new Error('No price');
+    const newPrice = parseFloat(raw.price);
+    const d = ST.data[id];
+    d.price = +newPrice.toFixed(a.dec);
+    d.history.push(d.price);
+    if (d.history.length > 1000) d.history.shift();
+
+    // Actualizar última vela
+    const now = Date.now();
+    const last = d.candles[d.candles.length - 1];
+    const interval = a.mode === 'longterm' ? 7*24*3600000 : 3600000;
+    if (last && now - last.time < interval) {
+      last.close = d.price;
+      if (d.price > last.high) last.high = d.price;
+      if (d.price < last.low)  last.low  = d.price;
+    } else {
+      d.candles.push({ time: now, open: d.price, high: d.price, low: d.price, close: d.price, volume: 0 });
+      if (d.candles.length > 500) d.candles.shift();
+    }
+
+    ST.dataSource[id] = 'live-twelve';
+    updateSourceBadge(id);
+    compute(id);
+    if (ST.active === id) fullRender(id);
+    renderBar();
+  } catch(e) {
+    console.warn(`⚠️ Twelve price falló ${a.name}:`, e.message);
+  }
+}
+
+// Rotación de llamadas Twelve (máx 8/min, 1 cada 8s aprox)
+function startTwelveRotation() {
+  const twelveIds = Object.keys(ST.assets).filter(k => ST.assets[k].source === 'twelve');
+  if (!twelveIds.length) return;
+
+  // Primera carga: escalonada para no saturar
+  twelveIds.forEach((id, i) => setTimeout(() => fetchTwelvePrice(id), i * 8000));
+
+  // Rotación continua: 1 activo cada 10 segundos
+  let idx = 0;
+  setInterval(() => {
+    const id = twelveIds[idx % twelveIds.length];
+    fetchTwelvePrice(id);
+    idx++;
+  }, 10000);
+}
+
+// ── INDICADOR DE FUENTE DE DATOS ─────────────────────────────
+function updateSourceBadge(id) {
+  if (ST.active !== id) return;
+  const src = ST.dataSource[id] || 'simulated';
+  const lbl = document.getElementById('liveLabel');
+  if (!lbl) return;
+  if (src === 'live-binance') {
+    lbl.textContent = '● BINANCE LIVE';
+    lbl.style.color = 'var(--green)';
+  } else if (src === 'live-twelve') {
+    lbl.textContent = '● TWELVE DATA';
+    lbl.style.color = 'var(--accent)';
+  } else {
+    lbl.textContent = '◌ SIMULADO';
+    lbl.style.color = 'var(--text2)';
+  }
+}
+
+// ── ACTUALIZAR HEADER CON PRECIO REAL ────────────────────────
+function updateHeader(id) {
+  if (ST.active !== id) return;
+  const d = ST.data[id], a = ST.assets[id];
+  if (!d) return;
+  const p = d.price;
+  const prev24 = d.candles[Math.max(0, d.candles.length - 24)]?.close || p;
+  const chg = p - prev24, pct = (chg/prev24*100).toFixed(3);
+  // Update asset tab prices
+  renderBar();
+}
+
+// ════════════════════════════════════════════════════════════
+// LARGO PLAZO — Panel de seguimiento de posición
+// ════════════════════════════════════════════════════════════
+
+function renderLTPanel(id) {
+  const a = ST.assets[id];
+  if (a.mode !== 'longterm' || !a.lt) return;
+
+  const d = ST.data[id];
+  const p = d.price;
+  const lt = a.lt;
+
+  // Buscar zona activa
+  const nearBuy  = lt.buyZones.find(z  => p <= z * 1.05 && p >= z * 0.85);
+  const nearSell = lt.sellZones.find(z => p >= z * 0.95 && p <= z * 1.15);
+  const pctFromEntry = lt.entry ? ((p - lt.entry) / lt.entry * 100).toFixed(2) : null;
+  const swingSimul = lt.entry && lt.sellZones[0] && lt.buyZones[0]
+    ? ((lt.sellZones[0] / lt.buyZones[0]) - 1) * 100
+    : null;
+
+  // Inyectar en el panel de estadísticas
+  const statsG = document.getElementById('statsG');
+  if (!statsG) return;
+
+  const zoneColor = nearBuy ? 'var(--green)' : nearSell ? 'var(--red)' : 'var(--text2)';
+  const zoneText  = nearBuy ? `🟢 ZONA COMPRA cerca ($${nearBuy})` : nearSell ? `🔴 ZONA VENTA cerca ($${nearSell})` : 'Sin zona activa';
+
+  statsG.innerHTML = `
+    <div class="s-box" style="grid-column:1/-1;background:rgba(0,200,255,.04);border-bottom:1px solid var(--border2)">
+      <div class="s-lbl">📊 Modo Largo Plazo — Seguimiento de posición</div>
+      <div style="font-size:10px;color:${zoneColor};font-weight:700;margin-top:4px">${zoneText}</div>
+    </div>
+    <div class="s-box"><div class="s-lbl">Precio actual</div><div class="s-val">${fmt(p,id)}</div></div>
+    <div class="s-box"><div class="s-lbl">Tu entrada</div><div class="s-val" style="color:var(--accent)">${lt.entry ? '$'+lt.entry : '—'}</div></div>
+    <div class="s-box"><div class="s-lbl">% desde entrada</div><div class="s-val ${pctFromEntry>=0?'bull':'bear'}">${pctFromEntry!==null?(pctFromEntry>=0?'+':'')+pctFromEntry+'%':'—'}</div></div>
+    <div class="s-box"><div class="s-lbl">Objetivo largo plazo</div><div class="s-val bull">${lt.target ? '$'+lt.target : '—'}</div></div>
+    <div class="s-box" style="grid-column:1/-1">
+      <div class="s-lbl">Zonas de COMPRA (acumular)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        ${lt.buyZones.map(z=>`<span style="padding:3px 10px;border-radius:3px;font-size:10px;font-weight:700;background:rgba(0,232,122,.1);color:var(--green);border:1px solid rgba(0,232,122,.3)">$${z}</span>`).join('')||'<span style="color:var(--text2);font-size:10px">No definidas</span>'}
+      </div>
+    </div>
+    <div class="s-box" style="grid-column:1/-1">
+      <div class="s-lbl">Zonas de VENTA parcial (toma de beneficios)</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        ${lt.sellZones.map(z=>`<span style="padding:3px 10px;border-radius:3px;font-size:10px;font-weight:700;background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.3)">$${z}</span>`).join('')||'<span style="color:var(--text2);font-size:10px">No definidas</span>'}
+      </div>
+    </div>
+    ${swingSimul!==null?`
+    <div class="s-box" style="grid-column:1/-1;background:rgba(255,214,10,.04)">
+      <div class="s-lbl">💡 Simulación swing: vender en $${lt.sellZones[0]} y recomprar en $${lt.buyZones[lt.buyZones.length-1]}</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--yellow);margin-top:4px">+${swingSimul.toFixed(0)}% más monedas con el mismo capital</div>
+    </div>`:''}
+    <div class="s-box"><div class="s-lbl">Monedas en cartera</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="s-val">${lt.holding||0}</div>
+        <button class="btn" onclick="editLTHolding('${id}')" style="font-size:8px;padding:2px 8px">Editar</button>
+      </div>
+    </div>
+    <div class="s-box"><div class="s-lbl">Valor cartera</div><div class="s-val bull">${lt.holding?'$'+(lt.holding*p).toFixed(0):'—'}</div></div>
+  `;
+}
+
+function editLTHolding(id) {
+  const h = prompt('¿Cuántas monedas/acciones tienes en cartera?');
+  if (h !== null && !isNaN(+h)) {
+    ST.assets[id].lt.holding = +h;
+    renderLTPanel(id);
+  }
+}
+
+// Alertas especiales largo plazo (zonas de swing)
+function checkLTAlerts(id) {
+  const a = ST.assets[id];
+  if (a.mode !== 'longterm' || !a.lt) return;
+  const d = ST.data[id], p = d.price, lt = a.lt, now = Date.now();
+  if (now - d.cooldown < 30 * 60 * 1000) return; // cooldown 30min para largo plazo
+
+  const nearBuy  = lt.buyZones.find(z  => p <= z * 1.03 && p >= z * 0.90);
+  const nearSell = lt.sellZones.find(z => p >= z * 0.97 && p <= z * 1.10);
+
+  if (!nearBuy && !nearSell) return;
+  d.cooldown = now;
+
+  const dir    = nearBuy ? 'LONG' : 'SHORT';
+  const reason = nearBuy
+    ? `Precio cerca de zona de ACUMULACIÓN $${nearBuy}`
+    : `Precio cerca de zona de TOMA DE BENEFICIOS $${nearSell}`;
+
+  const sig = calcSignal(id);
+  const al = {
+    id: now + Math.random(), asset: id,
+    dir, price: p,
+    conf: (sig.conf * 100).toFixed(0),
+    totalInd: sig.bull+sig.bear+sig.neut,
+    bullInd: sig.bull, bearInd: sig.bear, neutInd: sig.neut,
+    bullNames: (sig.signals||[]).filter(s=>s.dir==='bull').map(s=>s.n),
+    bearNames: (sig.signals||[]).filter(s=>s.dir==='bear').map(s=>s.n),
+    neutNames: (sig.signals||[]).filter(s=>s.dir==='neut').map(s=>s.n),
+    ltReason: reason,
+    isLongTerm: true,
+    time: new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+    dateStr: new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'}),
+    result: 'PENDING', resultPrice: null, resultTime: null, resultPct: null,
+    evalAt: now + 7*24*60*60*1000, // evaluar en 1 SEMANA para largo plazo
+    snap15: null, snap30: null,
+    snapAt15: now + 24*60*60*1000, // snapshot en 1 día
+    snapAt30: now + 3*24*60*60*1000, // snapshot en 3 días
+  };
+  ST.alerts.unshift(al);
+  ST.pending.push(al);
+  updateBellBadge();
+  toast(al); pushNotif(al);
+  renderAlerts(); updateAccuracy();
+}
+
+// ── SIMULACIÓN (fallback si falla la API) ────────────────────
+function initAssetSimulated(id) {
+  const a = ST.assets[id];
+  const base = a.base || 100;
+  const vol  = a.vol  || base * 0.001;
+  const d = ST.data[id] || { price: base, candles: [], history: [], indicators: {}, cooldown: 0, wins: 0, losses: 0, lastSig: 'NEUTRAL' };
+  let price = base * (0.995 + Math.random() * 0.01);
+  const now = Date.now();
+  const interval = a.mode === 'longterm' ? 7*24*3600000 : 3600000;
+  for (let i = 150; i >= 0; i--) {
+    const range = vol * 3 * (0.5 + Math.random());
+    const bull  = Math.random() > 0.45;
+    const close = bull ? price + range*(0.3+Math.random()*0.5) : price - range*(0.3+Math.random()*0.5);
+    const high  = Math.max(price, close) + Math.random()*range*0.3;
+    const low   = Math.min(price, close) - Math.random()*range*0.3;
+    d.candles.push({ time: now - i*interval, open:+price.toFixed(a.dec), high:+high.toFixed(a.dec), low:+low.toFixed(a.dec), close:+close.toFixed(a.dec), volume: Math.floor(400+Math.random()*4000) });
+    d.history.push(+close.toFixed(a.dec));
+    price = close;
+  }
+  d.price = d.candles[d.candles.length-1].close;
+  ST.data[id] = d;
+  ST.dataSource[id] = 'simulated';
+}
+
+// ── INIT ASSET ───────────────────────────────────────────────
 function initAsset(id) {
   const a = ST.assets[id];
-  const d = { price: a.base, candles: [], history: [], indicators: {}, cooldown: 0, wins: 0, losses: 0, lastSig: 'NEUTRAL' };
-  let price = a.base * (0.998 + Math.random() * 0.004);
-  const now = Date.now();
-  for (let i = 100; i >= 0; i--) {
-    const c = makeCandle(price, now - i * 3600000, a);
-    d.candles.push(c);
-    d.history.push(c.close);
-    price = c.close;
+  // Inicializar estructura de datos vacía con precio base temporal
+  ST.data[id] = {
+    price:      a.base || 100,
+    candles:    [],
+    history:    [],
+    indicators: {},
+    cooldown:   0,
+    wins:       0,
+    losses:     0,
+    lastSig:    'NEUTRAL',
+  };
+  ST.dataSource[id] = 'simulated';
+
+  if (a.source === 'binance') {
+    loadBinanceHistory(id).then(() => connectBinance(id));
+  } else if (a.source === 'twelve') {
+    loadTwelveHistory(id);
+  } else {
+    initAssetSimulated(id);
   }
-  d.price = d.candles[d.candles.length - 1].close;
-  ST.data[id] = d;
 }
 
 function makeCandle(open, time, a) {
-  const range = a.vol * 3 * (0.5 + Math.random());
-  const bull = Math.random() > 0.45;
-  const close = bull ? open + range * (0.3 + Math.random() * 0.5) : open - range * (0.3 + Math.random() * 0.5);
-  const high = Math.max(open, close) + Math.random() * range * 0.3;
-  const low  = Math.min(open, close) - Math.random() * range * 0.3;
-  return { time, open: +open.toFixed(a.dec), high: +high.toFixed(a.dec), low: +low.toFixed(a.dec), close: +close.toFixed(a.dec), volume: Math.floor(400 + Math.random() * 4000) };
+  const range = (a.vol||a.base*0.001) * 3 * (0.5 + Math.random());
+  const bull  = Math.random() > 0.45;
+  const close = bull ? open + range*(0.3+Math.random()*0.5) : open - range*(0.3+Math.random()*0.5);
+  const high  = Math.max(open,close) + Math.random()*range*0.3;
+  const low   = Math.min(open,close) - Math.random()*range*0.3;
+  return { time, open:+open.toFixed(a.dec), high:+high.toFixed(a.dec), low:+low.toFixed(a.dec), close:+close.toFixed(a.dec), volume:Math.floor(400+Math.random()*4000) };
 }
 
 function nextPrice(id) {
   const a = ST.assets[id], d = ST.data[id];
-  const noise = (Math.random() - 0.5) * 2 * a.vol;
-  const mr = (a.base - d.price) * 0.0008;
-  const trend = a.vol * 0.05 * Math.sin(Date.now() / (400000 + id.length * 28000));
+  const vol = a.vol || a.base*0.001;
+  const noise = (Math.random()-0.5)*2*vol;
+  const mr    = ((a.base||d.price) - d.price)*0.0008;
+  const trend = vol*0.05*Math.sin(Date.now()/(400000+id.length*28000));
   return d.price + noise + mr + trend;
 }
 
@@ -1016,9 +1443,13 @@ function renderCandleTable(id) {
 // ── RENDER: STATS ────────────────────────────────────────────
 function renderStats(id) {
   const a=ST.assets[id],d=ST.data[id],ind=d.indicators,p=d.price;
+  // Largo plazo: mostrar panel especializado
+  if (a.mode === 'longterm') { renderLTPanel(id); return; }
   const p24=d.candles[Math.max(0,d.candles.length-24)]?.close||p,chg=((p-p24)*a.uMul).toFixed(1);
   const t=d.wins+d.losses;
+  const srcLabel = ST.dataSource[id]==='live-binance'?'🟢 Binance Live':ST.dataSource[id]==='live-twelve'?'🔵 Twelve Data Live':'⚪ Simulado';
   document.getElementById('statsG').innerHTML=[
+    {l:'Fuente de datos',v:srcLabel,c:'var(--accent)'},
     {l:'Precio actual',v:fmt(p,id)},
     {l:`Cambio 24h (${a.unit})`,v:(chg>0?'+':'')+chg,c:chg>0?'var(--green)':'var(--red)'},
     {l:'RSI(14)',v:ind.rsi14?.toFixed(1)||'--',c:ind.rsi14<30?'var(--green)':ind.rsi14>70?'var(--red)':'var(--text)'},
@@ -1060,29 +1491,43 @@ function fullRender(id) {
   renderNews(id);
 }
 
-// ── UPDATE LOOP ───────────────────────────────────────────────
+// ── UPDATE LOOP (solo activos simulados; live se actualizan via WS/REST) ──
 function doUpdate() {
-  const now=Date.now();
+  const now = Date.now();
   ST.updateCount++;
-  const keys=Object.keys(ST.assets);
-  for(const k of keys){
-    const d=ST.data[k]; if(!d)continue;
-    const a=ST.assets[k];
-    d.price=+nextPrice(k).toFixed(a.dec);
-    d.history.push(d.price);
-    if(d.history.length>500)d.history.shift();
-    const last=d.candles[d.candles.length-1];
-    if(now-last.time>3600000){d.candles.push(makeCandle(d.price,now,a));if(d.candles.length>200)d.candles.shift();}
-    else{last.close=d.price;if(d.price>last.high)last.high=d.price;if(d.price<last.low)last.low=d.price;}
-    compute(k);
-    if(ST.updateCount%8===keys.indexOf(k)%8){const sig=calcSignal(k);d.lastSig=sig.dir;checkAlert(k,sig);}
+  const keys = Object.keys(ST.assets);
+  for (const k of keys) {
+    const d = ST.data[k]; if (!d) continue;
+    const a = ST.assets[k];
+    if (ST.dataSource[k] === 'simulated' && d.candles.length > 0) {
+      d.price = +nextPrice(k).toFixed(a.dec);
+      d.history.push(d.price);
+      if (d.history.length > 1000) d.history.shift();
+      const last = d.candles[d.candles.length - 1];
+      const interval = a.mode === 'longterm' ? 7*24*3600000 : 3600000;
+      if (now - last.time > interval) {
+        d.candles.push(makeCandle(d.price, now, a));
+        if (d.candles.length > 500) d.candles.shift();
+      } else {
+        last.close = d.price;
+        if (d.price > last.high) last.high = d.price;
+        if (d.price < last.low)  last.low  = d.price;
+      }
+      compute(k);
+    }
+    if (a.mode !== 'longterm' && ST.updateCount % 8 === keys.indexOf(k) % 8) {
+      const sig = calcSignal(k); d.lastSig = sig.dir; checkAlert(k, sig);
+    }
+    if (a.mode === 'longterm' && ST.updateCount % 20 === keys.indexOf(k) % 20) {
+      const sig = calcSignal(k); d.lastSig = sig.dir; checkLTAlerts(k);
+    }
   }
-  if(ST.updateCount%20===0)evalPending();
-  fullRender(ST.active);
+  if (ST.updateCount % 20 === 0) evalPending();
+  if (ST.dataSource[ST.active] === 'simulated') fullRender(ST.active);
   renderBar();
   updateAccuracy();
-  // Refresh alert panel live tracking if open
-  if(document.getElementById('alertPanel').style.display!=='none') renderAlertPanel();
+  updateSourceBadge(ST.active);
+  if (document.getElementById('alertPanel').style.display !== 'none') renderAlertPanel();
 }
 
 // ── TABS ─────────────────────────────────────────────────────
@@ -1498,13 +1943,20 @@ function manualAction(dir) {
 
 // ── INIT ─────────────────────────────────────────────────────
 window.addEventListener('load', () => {
-  for (const k of Object.keys(PRESET_ASSETS)) initAsset(k);
+  for (const k of Object.keys(PRESET_ASSETS)) {
+    initAssetSimulated(k);
+    compute(k);
+  }
   renderAlerts();
   updateAccuracy();
   initResizable();
   setTimeout(() => {
     document.getElementById('loader').classList.add('gone');
-    doUpdate();
+    fullRender(ST.active);
+    renderBar();
+    updateSourceBadge(ST.active);
+    for (const k of Object.keys(PRESET_ASSETS)) initAsset(k);
+    startTwelveRotation();
     setInterval(doUpdate, 5000);
   }, 1400);
 });
